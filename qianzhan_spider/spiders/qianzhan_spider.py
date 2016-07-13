@@ -8,7 +8,7 @@ import scrapy
 
 from ..items import CompanyInfoItem
 
-from ..utils import get_gb2312_txt
+from ..utils import get_gb2312_txt, get_1000_txt
 
 company_name_list = []
 
@@ -18,7 +18,7 @@ class QianzhanSpider(scrapy.Spider):
 
     def start_requests(self):
 
-        txt = get_gb2312_txt()
+        txt = get_1000_txt()
         for i in range(len(txt)):
             for j in range(len(txt)):
                 search_key = txt[i] + txt[j]
