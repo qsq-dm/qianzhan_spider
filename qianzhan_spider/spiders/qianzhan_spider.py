@@ -71,4 +71,9 @@ class QianzhanSpider(scrapy.Spider):
         company['business_address'] = ul_sel.xpath('./li[9]/span[@class="info"]/text()').extract_first()
         company['business_scope'] = ul_sel.xpath('./li[10]/span[@class="info"]/text()').extract_first()
 
+        ul_sel_2 = response.xpath('//ul[@class="art-org"]')
+
+        company['province'] = ul_sel_2.xpath('./li[2]/span[@class="info"]/text()').extract_first()
+        company['registration_authority'] = ul_sel_2.xpath('./li[2]/span[@class="info"]/text()').extract_first()
+
         yield company
