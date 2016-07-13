@@ -30,9 +30,9 @@ class CompanyInfoItem(scrapy.Item):
     registration_number = scrapy.Field()  # 注册号
     organization_registration_code = scrapy.Field()  # 组织机构代码
     business_status = scrapy.Field()  # 经营状态
-    business_type = scrapy.Field()  # 公司类型
+    business_type = scrapy.Field()  # 公司类型, 主体类型
     business_model = scrapy.Field()  # 经营模式
-    register_date = scrapy.Field()  # 成立日期
+    register_date = scrapy.Field()  # 成立日期, 登记日期
     legal_representative = scrapy.Field()  # 法定代表人
     registered_capital = scrapy.Field()  # 注册资本
     operating_period = scrapy.Field()  # 营业期限
@@ -42,7 +42,7 @@ class CompanyInfoItem(scrapy.Item):
     english_name = scrapy.Field()  # 公司英文名称
     business_scope = scrapy.Field()  # 经营范围
 
-    # url = scrapy.Field()  # 官网
+    url = scrapy.Field()  # 官网
 
 
     pass

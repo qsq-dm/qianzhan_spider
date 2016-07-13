@@ -16,70 +16,57 @@ class QianzhanSpider(scrapy.Spider):
 
     def start_requests(self):
 
-        url = "http://qiye.qianzhan.com/"
-
-        request = scrapy.FormRequest(
-            url=url,
-            callback=self.parse,
-        )
-        yield request
-
-    def parse(self, response):
-        link_li_list = response.xpath('//div[@id="hy_middle_connect_ul_connect"]/ul/li/a')
-        for li_sel in link_li_list:
-            href = li_sel.xpath('./@href').extract_first()
-            title = li_sel.xpath('./text()').extract_first()
-
-            url = response.urljoin(href)
-            request = scrapy.Request(url, callback=self.parse_list)
-            yield request
-
-        link_li_list_2 = response.xpath('//div[@class="dqcon"]/ul/li/a')
-        for li_sel in link_li_list_2:
-            href = li_sel.xpath('./@href').extract_first()
-            title = li_sel.xpath('./text()').extract_first()
-
-            url = response.urljoin(href)
-
-            for i in range(1, 1000):  # 1-1000 pages
-                str = '_%d' % i
-                new_url = url.replace('_1', str)
-                print new_url
-                request = scrapy.Request(new_url, callback=self.parse_list)
+        txt = get_gb2312_txt()
+        for i in range(len(txt)):
+            for j in range(len(txt)):
+                search_key = txt[i] + txt[j]
+                # search_key = u'一三'
+                print "++++++gb2312+++++++: %s %d %d %d %s" % (
+                time.strftime('%Y-%m-%d', time.localtime(time.time())), i, j, len(txt), search_key)
+                # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
+                url = "http://qiye.qianzhan.com/orgcompany/searchlistview/all/" + urllib.quote(
+                    search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
+                # print url
+                request = scrapy.Request(
+                    url,
+                    callback=self.parse
+                )
                 yield request
 
-    def parse_list(self, response):
-        a_list = response.xpath('//div[@class="dqscon"]/ul/li/a')
-        for sel in a_list:
-            href = sel.xpath('./@href').extract_first()
+
+    def parse(self, response):
+        link_li_list = response.xpath('//ul[@class="list-search"]/li/p[@class="tit"]/a')
+        for li_sel in link_li_list:
+            href = li_sel.xpath('./@href').extract_first()
+            # title = li_sel.xpath('./text()').extract_first()
+
             url = response.urljoin(href)
             request = scrapy.Request(url, callback=self.parse_company)
             yield request
 
-        # next_page = ""
+        next_page_href = response.xpath('//a[@class="next"]/@href').extract_first()
+        next_page_url = response.urljoin(next_page_href)
+        request = scrapy.Request(next_page_url, self.parse)
+        yield request
 
-        pass
 
     def parse_company(self, response):
         company = CompanyInfoItem()
 
-        gsinfocon_div = response.xpath('//div[@class="gsinfo f_l mr_t10"]/div[@class="gsinfocon"]')
-        company['company_name'] = gsinfocon_div.xpath('./ul[1]/li[2]/span/text()').extract_first()
-        company['business_model'] = gsinfocon_div.xpath('./ul[2]/li[2]/text()').extract_first()
-        company['business_scope'] = gsinfocon_div.xpath('./ul[3]/li[2]/text()').extract_first()
+        company['company_name'] = response.xpath('//h1[@class="ct_name"]/text()').extract_first()
+        company['url'] = response.xpath('//a[@class="url"]/text()').extract_first()
 
-        gslx_div = response.xpath('//div[@class="gsinfo f_l mr_t10"]/div[@class="gslx"]')
+        ul_sel = response.xpath('//ul[@class="art-basic"]')
 
-        company['business_address'] = gslx_div.xpath(
-            './div[@class="gs_con_left]/div[@class="gslxcon"]/ul[1]/li[2]/text()').extract_first()
-        company['phone'] = gslx_div.xpath(
-            './div[@class="gs_con_left]/div[@class="gslxcon"]/ul[2]/li[2]/text()').extract_first()
-        company['fax'] = gslx_div.xpath(
-            './div[@class="gs_con_left]/div[@class="gslxcon"]/ul[3]/li[2]/text()').extract_first()
-        company['mobile'] = gslx_div.xpath(
-            './div[@class="gs_con_left]/div[@class="gslxcon"]/ul[4]/li[2]/text()').extract_first()
-        company['link_man'] = gslx_div.xpath(
-            './div[@class="gs_con_left]/div[@class="gslxcon"]/ul[5]/li[2]/text()').extract_first()
+        company['organization_registration_code'] = ul_sel.xpath('./li[1]/span[@class="info"]/text()').extract_first()
+        company['registration_number'] = ul_sel.xpath('./li[2]/span[@class="info"]/text()').extract_first()
+        company['legal_representative'] = ul_sel.xpath('./li[3]/span[@class="info"]/text()').extract_first()
+        company['business_status'] = ul_sel.xpath('./li[4]/span[@class="info"]/text()').extract_first()
+        company['registered_capital'] = ul_sel.xpath('./li[5]/span[@class="info"]/text()').extract_first()
+        company['business_type'] = ul_sel.xpath('./li[6]/span[@class="info"]/text()').extract_first()
+        company['register_date'] = ul_sel.xpath('./li[7]/span[@class="info"]/text()').extract_first()
+        company['operating_period'] = ul_sel.xpath('./li[8]/span[@class="info"]/text()').extract_first()
+        company['business_address'] = ul_sel.xpath('./li[9]/span[@class="info"]/text()').extract_first()
+        company['business_scope'] = ul_sel.xpath('./li[10]/span[@class="info"]/text()').extract_first()
 
         yield company
-        pass
