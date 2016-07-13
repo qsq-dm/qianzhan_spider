@@ -62,6 +62,8 @@ class QianzhanSpider(scrapy.Spider):
         company['company_name'] = response.xpath('//h1[@class="ct_name"]/text()').extract_first()
         company['url'] = response.xpath('//a[@class="url"]/text()').extract_first()
 
+        companyInfoItem['item_update_time'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+
         ul_sel = response.xpath('//ul[@class="art-basic"]')
 
         company['organization_registration_code'] = ul_sel.xpath('./li[1]/span[@class="info"]/text()').extract_first()
