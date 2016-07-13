@@ -10,6 +10,8 @@ from ..items import CompanyInfoItem
 
 from ..utils import get_gb2312_txt
 
+company_name_list = []
+
 
 class QianzhanSpider(scrapy.Spider):
     name = "qianzhan_spider"
@@ -40,11 +42,13 @@ class QianzhanSpider(scrapy.Spider):
         link_li_list = response.xpath('//ul[@class="list-search"]/li/p[@class="tit"]/a')
         for li_sel in link_li_list:
             href = li_sel.xpath('./@href').extract_first()
-            # title = li_sel.xpath('./text()').extract_first()
+            company_name = li_sel.xpath('./text()').extract_first()
 
-            url = response.urljoin(href)
-            request = scrapy.Request(url, callback=self.parse_company)
-            yield request
+            if company_name not in company_name_list:
+                company_name_list.append(company_name)
+                url = response.urljoin(href)
+                request = scrapy.Request(url, callback=self.parse_company)
+                yield request
 
         next_page_href = response.xpath('//a[@class="next"]/@href').extract_first()
         next_page_url = response.urljoin(next_page_href)
