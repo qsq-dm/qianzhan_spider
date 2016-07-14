@@ -14,7 +14,7 @@ company_name_list = []
 
 
 class QianzhanSpider(scrapy.Spider):
-    name = "qianzhan_spider"
+    name = "qianzhan_spider_1000"
 
     def start_requests(self):
 
@@ -62,7 +62,7 @@ class QianzhanSpider(scrapy.Spider):
         company['company_name'] = response.xpath('//h1[@class="ct_name"]/text()').extract_first()
         company['url'] = response.xpath('//a[@class="url"]/text()').extract_first()
 
-        companyInfoItem['item_update_time'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+        company['item_update_time'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
 
         ul_sel = response.xpath('//ul[@class="art-basic"]')
 
