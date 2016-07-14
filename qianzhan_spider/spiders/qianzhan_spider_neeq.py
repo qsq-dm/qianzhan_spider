@@ -25,8 +25,7 @@ class QianzhanSpider(scrapy.Spider):
         for item in neeq_items:
             print "company_name: ", item['hqzqjc']
             # url = "http://www.qichacha.com/search?key=%s&index=0" % item['hqzqjc']
-            url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/%s?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=1" % \
-                  item['hqzqjc']
+            url = "http://qiye.qianzhan.com/orgcompany/searchlistview/all/%s?o=0&area=0&areaN=全国&p=1" % item['hqzqjc']
             request = scrapy.Request(
                 url,
                 callback=self.parse
@@ -59,6 +58,7 @@ class QianzhanSpider(scrapy.Spider):
         company['url'] = response.xpath('//a[@class="url"]/text()').extract_first()
 
         company['item_update_time'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+        company['item_from'] = u'neeq'
 
         ul_sel = response.xpath('//ul[@class="art-basic"]')
 
@@ -84,10 +84,10 @@ class QianzhanSpider(scrapy.Spider):
         url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
         form_data = {
             'orgName': company['company_name'],
-            'page': 1,
-            'pagesize': 10
+            'page': '1',
+            'pagesize': '10'
         }
-        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.searchitemdftz)
+        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemdftz)
         request.meta['company'] = company
         yield request
 
