@@ -19,6 +19,14 @@ class QianzhanSpider(scrapy.Spider):
     name = "qianzhan_spider_neeq"
 
     def start_requests(self):
+        url = ""
+        form_data = {}
+
+        request = scrapy.FormRequest(url, formdata=form_data, callback=self.parse)
+        yield request
+
+
+    def parse(self, response):
 
         neeq_items = NeeqItemsDB.get_neeq_items()
 
@@ -28,13 +36,13 @@ class QianzhanSpider(scrapy.Spider):
             url = "http://qiye.qianzhan.com/orgcompany/searchlistview/all/%s?o=0&area=0&areaN=全国&p=1" % item['hqzqjc']
             request = scrapy.Request(
                 url,
-                callback=self.parse
+                callback=self.parse_list
             )
             # request.meta['item_category'] = item['xxfcbj']
             request.meta['item_category_num'] = item['xxfcbj']
             yield request
 
-    def parse(self, response):
+    def parse_list(self, response):
         link_li_list = response.xpath('//ul[@class="list-search"]/li/p[@class="tit"]/a')
         for li_sel in link_li_list:
             href = li_sel.xpath('./@href').extract_first()
@@ -48,7 +56,7 @@ class QianzhanSpider(scrapy.Spider):
 
         next_page_href = response.xpath('//a[@class="next"]/@href').extract_first()
         next_page_url = response.urljoin(next_page_href)
-        request = scrapy.Request(next_page_url, self.parse)
+        request = scrapy.Request(next_page_url, self.parse_list)
         yield request
 
     def parse_company(self, response):
