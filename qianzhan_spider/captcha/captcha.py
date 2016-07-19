@@ -5,6 +5,7 @@ from PIL import Image
 import cv2
 import numpy
 import pytesseract
+import io
 
 
 def _convert_to_jpg(gif_file):
@@ -31,5 +32,5 @@ def _format_img(jpg_file):
     return jpg_file
 
 
-def read_gif_img_to_string(gif_file):
-    return pytesseract.image_to_string(Image.open(_format_img(_convert_to_jpg(gif_file))), 'eng+chi_sim')
+def read_body_to_string(body):
+    return pytesseract.image_to_string(Image.open(_format_img(_convert_to_jpg(io.BytesIO(body)))), 'eng+chi_sim')

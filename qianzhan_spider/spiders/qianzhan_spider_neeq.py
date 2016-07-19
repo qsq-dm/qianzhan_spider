@@ -6,11 +6,14 @@ import urllib
 import json
 
 import scrapy
+import random
 
 from ..items import CompanyInfoItem
 from ..db.mongo import NeeqItemsDB
 
 from ..utils import get_gb2312_txt, get_1000_txt
+
+from qianzhan_spider.captcha import read_body_to_string
 
 company_name_list = []
 
@@ -19,14 +22,45 @@ class QianzhanSpider(scrapy.Spider):
     name = "qianzhan_spider_neeq"
 
     def start_requests(self):
-        url = ""
-        form_data = {}
-
-        request = scrapy.FormRequest(url, formdata=form_data, callback=self.parse)
+        url = "http://qiye.qianzhan.com/usercenter/login?ReturnUrl=http%3A%2F%2Fqiye.qianzhan.com%2F"
+        request = scrapy.Request(url=url, callback=self.parse_get_login)
         yield request
+        pass
 
+    def parse_get_login(self, response):
+        varifyimage = response.xpath('//img[@class="code-img"]/@src').extract_first()
+        url = response.urljoin(varifyimage)
+        request = scrapy.Request(url=url, callback=self.parse_varifyimage)
+        yield request
+        pass
 
-    def parse(self, response):
+    def parse_varifyimage(self, response):
+
+        varifycode = read_body_to_string(response.body)
+        print "varifycode: %s" % varifycode
+
+        form_data = {
+            "userId": "15901487291",
+            "password": "mingzi305603665",
+            "VerifyCode": varifycode,
+            "sevenDays": False
+        }
+
+        url = "http://qiye.qianzhan.com/usercenter/dologin"
+
+        request = scrapy.FormRequest(url, formdata=form_data, callback=self.parse_post_login)
+        yield request
+        pass
+
+    def parse_post_login(self, response):
+        # {"isSuccess":false,"sMsg":"验证码已过期，请换一张！ 登陆次数1次","dataList":null,"rowCount":0,"status":0}
+        json_obj = json.loads(response.body)
+        if not json_obj.get("isSuccess"):
+            varifyimage = "/usercenter/varifyimage?" + random.random()
+            url = response.urljoin(varifyimage)
+            request = scrapy.Request(url=url, callback=self.parse_varifyimage)
+            yield request
+            return
 
         neeq_items = NeeqItemsDB.get_neeq_items()
 
@@ -89,6 +123,24 @@ class QianzhanSpider(scrapy.Spider):
         company['hdencryptCode'] = response.xpath('//input[@id="hdencryptCode"]/@value')
         company['hdoc_area'] = response.xpath('//input[@id="hdoc_area"]/@value')
 
+        url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
+        form_data = {
+            'orgCode': company['hdencryptCode'],
+            'areaCode': company['hdoc_area']
+        }
+        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_SearchItemCCXX)
+        request.meta['company'] = company
+        yield request
+
+    def parse_SearchItemCCXX(self, response):
+        company = response.meta['company']
+        json_text = response.body
+        json_obj = json.loads(json_text)
+        dataList = json_obj['dataList']
+
+        company['SearchItemCCXX'] = dataList
+        print dataList
+
         url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
         form_data = {
             'orgName': company['company_name'],
@@ -142,5 +194,24 @@ class QianzhanSpider(scrapy.Spider):
         dataList = json_obj['dataList']
 
         company['searchitemnb'] = dataList
+
+        url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
+        form_data = {
+            'orgCode': company['hdencryptCode'],
+            'page': '1',
+            'pagesize': '10'
+        }
+        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemsite)
+        request.meta['company'] = company
+        yield request
+
+    def parse_searchitemsite(self, response):
+        company = response.meta['company']
+
+        json_text = response.body
+        json_obj = json.loads(json_text)
+        dataList = json_obj['dataList']
+
+        company['searchitemsite'] = dataList
 
         yield company

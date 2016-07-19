@@ -44,9 +44,11 @@ class CompanyInfoItem(scrapy.Item):
 
     url = scrapy.Field()  # 官网
 
+    SearchItemCCXX = scrapy.Field()
     searchitemdftz = scrapy.Field()
     searchitemnbinfo = scrapy.Field()
     searchitemnb = scrapy.Field()
+    searchitemsite = scrapy.Field()
     hdencryptCode = scrapy.Field()
     hdoc_area = scrapy.Field()
 
