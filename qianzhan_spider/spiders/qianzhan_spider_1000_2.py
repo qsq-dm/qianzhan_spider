@@ -28,39 +28,37 @@ class QianzhanSpider(scrapy.Spider):
 
     def parse_login(self, response):
         varifyimage = response.xpath('//img[@class="code-img"]/@src').extract_first()
-        return self.do_get_varifyimage(response, varifyimage)
 
-    def do_get_varifyimage(self, response, varifyimage_url):
-        url = response.urljoin(varifyimage_url)
+        url = response.urljoin(varifyimage)
         request = scrapy.Request(url=url, callback=self.parse_varifyimage)
         yield request
 
 
-    def parse_varifyimage(self, response):
 
+    def parse_varifyimage(self, response):
         varifycode = read_body_to_string(response.body)
         print "varifycode: %s" % varifycode.strip()
-        return self.do_login(varifycode.strip())
 
-    def do_login(self, varifycode):
         form_data = {
             "userId": "15901487291",
             "password": "mingzi305603665",
-            "VerifyCode": varifycode,
+            "VerifyCode": varifycode.strip(),
             "sevenDays": "false"
         }
-
         url = "http://qiye.qianzhan.com/usercenter/dologin"
-
         request = scrapy.FormRequest(url, formdata=form_data, callback=self.parse_post_login)
         yield request
+
 
 
     def parse_post_login(self, response):
         # {"isSuccess":false,"sMsg":"验证码已过期，请换一张！ 登陆次数1次","dataList":null,"rowCount":0,"status":0}
         json_obj = json.loads(response.body)
         if not json_obj.get("isSuccess"):
-            self.do_get_varifyimage_2(response)
+            varifyimage = "/usercenter/varifyimage?" + str(random.random())
+            url = response.urljoin(varifyimage)
+            request = scrapy.Request(url=url, callback=self.parse_varifyimage)
+            yield request
             return
 
         print "********************"
@@ -68,15 +66,6 @@ class QianzhanSpider(scrapy.Spider):
         print "********************"
         # return
 
-        return self.do_crawl_1000()
-
-    def do_get_varifyimage_2(self, response):
-        varifyimage = "/usercenter/varifyimage?" + str(random.random())
-        url = response.urljoin(varifyimage)
-        request = scrapy.Request(url=url, callback=self.parse_varifyimage)
-        yield request
-
-    def do_crawl_1000(self):
         txt = get_1000_txt()
         for i in range(len(txt)):
             for j in range(len(txt)):
@@ -146,9 +135,8 @@ class QianzhanSpider(scrapy.Spider):
         company['hdencryptCode'] = response.xpath('//input[@id="hdencryptCode"]/@value').extract_first()
         company['hdoc_area'] = response.xpath('//input[@id="hdoc_area"]/@value').extract_first()
 
-        return self.do_get_SearchItemCCXX(company)
 
-    def do_get_SearchItemCCXX(self, company):
+
         url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
         form_data = {
             'orgCode': company['hdencryptCode'],
@@ -168,9 +156,6 @@ class QianzhanSpider(scrapy.Spider):
         company['SearchItemCCXX'] = dataList
         print "SearchItemCCXX: ", dataList
 
-        return self.do_get_searchitemdftz(company)
-
-    def do_get_searchitemdftz(self, company):
         url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
         form_data = {
             'orgName': company['company_name'],
@@ -191,9 +176,7 @@ class QianzhanSpider(scrapy.Spider):
         company['searchitemdftz'] = dataList
         print "searchitemdftz: ", dataList
 
-        return self.do_get_searchitemnbinfo(company)
 
-    def do_get_searchitemnbinfo(self, company):
         url = "http://qiye.qianzhan.com/orgcompany/searchitemnbinfo"
         form_data = {
             'orgCode': company['hdencryptCode'],
@@ -214,20 +197,25 @@ class QianzhanSpider(scrapy.Spider):
         print "searchitemnbinfo: ", dataList
 
         if len(company['searchitemnbinfo']) > 0:
-            return self.do_get_searchitemnb(company)
+            url = "http://qiye.qianzhan.com/orgcompany/searchitemnb"
+            form_data = {
+                'orgCode': company['hdencryptCode'],
+                'areaCode': company['hdoc_area'],
+                'year': company['searchitemnbinfo'][0]['year'],
+            }
+            request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemnbinfo)
+            request.meta['company'] = company
+            yield request
         else:
-            return self.do_get_searchitemsite(company)
-
-    def do_get_searchitemnb(self, company):
-        url = "http://qiye.qianzhan.com/orgcompany/searchitemnb"
-        form_data = {
-            'orgCode': company['hdencryptCode'],
-            'areaCode': company['hdoc_area'],
-            'year': company['searchitemnbinfo'][0]['year'],
-        }
-        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemnbinfo)
-        request.meta['company'] = company
-        yield request
+            url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
+            form_data = {
+                'orgCode': company['hdencryptCode'],
+                'page': '1',
+                'pagesize': '10'
+            }
+            request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemsite)
+            request.meta['company'] = company
+            yield request
 
     def parse_searchitemnb(self, response):
         company = response.meta['company']
@@ -238,9 +226,6 @@ class QianzhanSpider(scrapy.Spider):
         company['searchitemnb'] = dataList
         print "searchitemnb: ", dataList
 
-        return self.do_get_searchitemsite(company)
-
-    def do_get_searchitemsite(self, company):
         url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
         form_data = {
             'orgCode': company['hdencryptCode'],

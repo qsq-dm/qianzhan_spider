@@ -148,7 +148,7 @@ ITEM_PIPELINES = {
 
 # MONGO
 MONGO_URI = "localhost:27017"
-MONGO_DB = "qianzhan"
+MONGO_DB = "qianzhan_1000"
 MONGO_NEEQ_DB = "neeq"
 
 # LOG
