@@ -62,6 +62,9 @@ class QianzhanSpider(scrapy.Spider):
             yield request
             return
 
+        print "login success!"
+        return
+
         neeq_items = NeeqItemsDB.get_neeq_items()
 
         for item in neeq_items:
