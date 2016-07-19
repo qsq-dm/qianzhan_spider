@@ -9,7 +9,7 @@ import io
 
 
 def _convert_to_jpg(gif_file):
-    o_filename = gif_file[:-4] + '.jpg'
+    o_filename = 'verifyimage.jpg'
 
     im = Image.open(gif_file)
     background = Image.new("RGB", im.size, (255, 255, 255))
