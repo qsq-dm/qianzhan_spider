@@ -112,7 +112,7 @@ ITEM_PIPELINES = {
 # MONGO
 MONGO_URI = "localhost:27017"
 MONGO_DB = "qianzhan"
-# MONGO_NEEQ_DB = "neeq"
+MONGO_NEEQ_DB = "neeq"
 
 # LOG
 LOG_FILE = 'log/%s.log' % datetime.datetime.now().strftime('%Y-%m-%d')
