@@ -10,8 +10,6 @@ from ..items import CompanyInfoItem
 
 from ..utils import get_gb2312_txt, get_1000_txt
 
-company_name_list = []
-
 
 class QianzhanSpider(scrapy.Spider):
     name = "qianzhan_spider_1000"
