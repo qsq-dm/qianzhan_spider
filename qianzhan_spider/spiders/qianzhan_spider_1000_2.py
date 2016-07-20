@@ -85,8 +85,8 @@ class QianzhanSpider(scrapy.Spider):
                     callback=self.parse_list
                 )
                 yield request
-                break
-            break
+                # break
+                # break
 
 
     def parse_list(self, response):

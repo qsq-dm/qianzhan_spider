@@ -1,13 +1,13 @@
-# # -*- coding:utf-8 -*-
-# __author__ = 'zhaojm'
+# -*- coding:utf-8 -*-
+__author__ = 'zhaojm'
 #
-# import redis
-# import os
+import redis
+import os
 #
-# REDIS_HOST = os.getenv("REDIS_HOST", '127.0.0.1')
-# REDIS_PORT = os.getenv("REDIS_PORT", 6379)
+REDIS_HOST = os.getenv("REDIS_HOST", '127.0.0.1')
+REDIS_PORT = os.getenv("REDIS_PORT", 6379)
 #
-# redis_client = redis.StrictRedis(REDIS_HOST, REDIS_PORT, db=0)
+redis_client = redis.StrictRedis(REDIS_HOST, REDIS_PORT, db=0)
 #
 # # 向redis里缓存用户信息 key:user_info field:user_id value:name;head_img_url
 # # redis> HSET myhash field1 "Hello"
@@ -35,11 +35,10 @@
 # redis_client.expire(ADMIN_TOKEN, 60 * 60 * 24)
 #
 #
-# class RedisClient():
-#
-#     def __init__(self):
-#         pass
-#
+class RedisClient():
+    def __init__(self):
+        pass
+
 #     @staticmethod
 #     def clear_redis():
 #         """
