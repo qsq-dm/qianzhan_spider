@@ -14,7 +14,7 @@ def _convert_to_jpg(gif_file):
     im = Image.open(gif_file)
     background = Image.new("RGB", im.size, (255, 255, 255))
     background.paste(im)
-    background.save(o_filename, 'JPEG', quality=80)
+    background.save(o_filename, 'JPEG')
     return o_filename
 
 
