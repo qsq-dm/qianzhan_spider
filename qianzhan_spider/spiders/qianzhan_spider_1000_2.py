@@ -1,19 +1,16 @@
 # -*- coding:utf-8 -*-
 __author__ = 'zhaojm'
 
+import json
+import random
 import time
 import urllib
-import json
 
 import scrapy
-import random
-
-from ..items import CompanyInfoItem
-from ..db.mongo import NeeqItemsDB
-
-from ..utils import get_gb2312_txt, get_1000_txt
 
 from qianzhan_spider.captcha import read_body_to_string
+from ..items import CompanyInfoItem
+from ..utils import get_1000_txt
 
 
 class QianzhanSpider(scrapy.Spider):
@@ -31,8 +28,6 @@ class QianzhanSpider(scrapy.Spider):
         request = scrapy.Request(url=url, callback=self.parse_varifyimage)
         yield request
 
-
-
     def parse_varifyimage(self, response):
         varifycode = read_body_to_string(response.body)
         print "varifycode: %s" % varifycode.replace(' ', '')
@@ -46,8 +41,6 @@ class QianzhanSpider(scrapy.Spider):
         url = "http://qiye.qianzhan.com/usercenter/dologin"
         request = scrapy.FormRequest(url, formdata=form_data, callback=self.parse_post_login)
         yield request
-
-
 
     def parse_post_login(self, response):
         # {"isSuccess":false,"sMsg":"验证码已过期，请换一张！ 登陆次数1次","dataList":null,"rowCount":0,"status":0}
@@ -84,7 +77,6 @@ class QianzhanSpider(scrapy.Spider):
                 yield request
                 # break
                 # break
-
 
     def parse_list(self, response):
         link_li_list = response.xpath('//ul[@class="list-search"]/li/p[@class="tit"]/a')
@@ -133,8 +125,6 @@ class QianzhanSpider(scrapy.Spider):
         company['hdencryptCode'] = response.xpath('//input[@id="hdencryptCode"]/@value').extract_first()
         company['hdoc_area'] = response.xpath('//input[@id="hdoc_area"]/@value').extract_first()
 
-
-
         url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
         form_data = {
             'orgCode': company['hdencryptCode'],
@@ -143,7 +133,6 @@ class QianzhanSpider(scrapy.Spider):
         request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_SearchItemCCXX)
         request.meta['company'] = company
         yield request
-
 
     def parse_SearchItemCCXX(self, response):
         company = response.meta['company']
@@ -164,7 +153,6 @@ class QianzhanSpider(scrapy.Spider):
         request.meta['company'] = company
         yield request
 
-
     def parse_searchitemdftz(self, response):
         company = response.meta['company']
         json_text = response.body
@@ -183,7 +171,6 @@ class QianzhanSpider(scrapy.Spider):
         request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemnbinfo)
         request.meta['company'] = company
         yield request
-
 
     def parse_searchitemnbinfo(self, response):
         company = response.meta['company']
