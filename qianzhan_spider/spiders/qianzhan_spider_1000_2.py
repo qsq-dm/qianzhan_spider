@@ -16,9 +16,6 @@ from ..utils import get_gb2312_txt, get_1000_txt
 from qianzhan_spider.captcha import read_body_to_string
 
 
-# company_name_list = []
-
-
 class QianzhanSpider(scrapy.Spider):
     name = "qianzhan_spider_1000_2"
 
