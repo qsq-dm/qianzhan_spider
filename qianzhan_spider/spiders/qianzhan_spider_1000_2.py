@@ -8,7 +8,7 @@ import urllib
 
 import scrapy
 
-from qianzhan_spider.captcha import read_body_to_string
+from ..captcha import read_body_to_string
 from ..items import CompanyInfoItem
 from ..utils import get_1000_txt
 
