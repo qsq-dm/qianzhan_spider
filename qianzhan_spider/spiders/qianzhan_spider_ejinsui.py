@@ -29,7 +29,7 @@ class QianzhanSpider(scrapy.Spider):
                 search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
             request = scrapy.Request(
                 url,
-                callback=self.parse_list
+                callback=self.parse
             )
             request.meta['ejinsui'] = item
             yield request
