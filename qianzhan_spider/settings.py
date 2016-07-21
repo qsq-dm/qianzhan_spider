@@ -85,7 +85,8 @@ ITEM_PIPELINES = {
     'qianzhan_spider.pipelines.ValidParamsPipeline': 100,
     # '_56ye_spider.pipelines.DuplicatesPipeline': 200,
     # '_56ye_spider.pipelines.CheckProxyPipeline': 300,
-    'qianzhan_spider.pipelines.MongoPipeline': 400,
+    # 'qianzhan_spider.pipelines.MongoPipeline': 400,
+    'qianzhan_spider.pipelines.MongoPipelineEjinsui': 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -109,10 +110,7 @@ ITEM_PIPELINES = {
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-# MONGO
-MONGO_URI = "localhost:27017"
-MONGO_DB = "qianzhan"
-MONGO_NEEQ_DB = "neeq"
+
 
 # LOG
 LOG_FILE = 'log/%s.log' % datetime.datetime.now().strftime('%Y-%m-%d')

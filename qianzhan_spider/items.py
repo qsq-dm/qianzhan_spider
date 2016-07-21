@@ -52,5 +52,7 @@ class CompanyInfoItem(scrapy.Item):
     hdencryptCode = scrapy.Field()
     hdoc_area = scrapy.Field()
 
+    ejinsui = scrapy.Field()
+
 
     pass
