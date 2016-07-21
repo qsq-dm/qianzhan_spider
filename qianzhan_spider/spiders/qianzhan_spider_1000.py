@@ -43,11 +43,9 @@ class QianzhanSpider(scrapy.Spider):
             href = li_sel.xpath('./@href').extract_first()
             company_name = li_sel.xpath('./text()').extract_first()
 
-            if company_name not in company_name_list:
-                company_name_list.append(company_name)
-                url = response.urljoin(href)
-                request = scrapy.Request(url, callback=self.parse_company)
-                yield request
+            url = response.urljoin(href)
+            request = scrapy.Request(url, callback=self.parse_company)
+            yield request
 
         next_page_href = response.xpath('//a[@class="next"]/@href').extract_first()
         next_page_url = response.urljoin(next_page_href)
