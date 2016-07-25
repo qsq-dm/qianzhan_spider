@@ -80,6 +80,7 @@ class QianzhanSpider(scrapy.Spider):
                     # break
 
     def parse_list(self, response):
+
         link_li_list = response.xpath('//ul[@class="list-search"]/li/p[@class="tit"]/a')
         # print "link_li_list len: ", len(link_li_list)
         for li_sel in link_li_list:
@@ -97,13 +98,13 @@ class QianzhanSpider(scrapy.Spider):
             yield request
 
     def parse_company(self, response):
+
         company = CompanyInfoItem()
 
         company['company_name'] = response.xpath('//h1[@class="ct_name"]/text()').extract_first()
         company['url'] = response.xpath('//a[@class="url"]/text()').extract_first()
 
         company['item_update_time'] = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-        # company['item_from'] = u'neeq'
 
         ul_sel = response.xpath('//ul[@class="art-basic"]')
 
@@ -126,6 +127,27 @@ class QianzhanSpider(scrapy.Spider):
         company['hdencryptCode'] = response.xpath('//input[@id="hdencryptCode"]/@value').extract_first()
         company['hdoc_area'] = response.xpath('//input[@id="hdoc_area"]/@value').extract_first()
 
+        print "company:->", company
+
+        url = "http://qiye.qianzhan.com/orgcompany/getcommentlist"
+        form_data = {
+            'orgCode': company['hdencryptCode'],
+            'page': '1',
+            'pagesize': '5'
+        }
+        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_getcommentlist)
+        request.meta['company'] = company
+        yield request
+
+    def parse_getcommentlist(self, response):
+        company = response.meta['company']
+        json_text = response.body
+        json_obj = json.loads(json_text)
+        print "getcommentlist:->", json_obj
+        dataList = json_obj['dataList']
+
+        company['getcommentlist'] = dataList
+
         url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
         form_data = {
             'orgCode': company['hdencryptCode'],
@@ -135,14 +157,15 @@ class QianzhanSpider(scrapy.Spider):
         request.meta['company'] = company
         yield request
 
+
     def parse_SearchItemCCXX(self, response):
         company = response.meta['company']
         json_text = response.body
         json_obj = json.loads(json_text)
+        print "SearchItemCCXX:->", json_obj
         dataList = json_obj['dataList']
 
         company['SearchItemCCXX'] = dataList
-        # print "SearchItemCCXX: ", dataList
 
         url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
         form_data = {
@@ -158,11 +181,10 @@ class QianzhanSpider(scrapy.Spider):
         company = response.meta['company']
         json_text = response.body
         json_obj = json.loads(json_text)
+        print "searchitemdftz:->", json_obj
         dataList = json_obj['dataList']
 
         company['searchitemdftz'] = dataList
-        # print "searchitemdftz: ", dataList
-
 
         url = "http://qiye.qianzhan.com/orgcompany/searchitemnbinfo"
         form_data = {
@@ -177,15 +199,18 @@ class QianzhanSpider(scrapy.Spider):
         company = response.meta['company']
         json_text = response.body
         json_obj = json.loads(json_text)
+        print "searchitemnbinfo:->", json_obj
         dataList = json_obj['dataList']
 
         if isinstance(dataList, dict):
+            print "++++++++++++++++  is dict +++++++++++++++"
             dataList = [dataList]
 
         company['searchitemnbinfo'] = dataList
         # print "searchitemnbinfo: ", dataList
 
-        if len(dataList) > 0:
+        if dataList and len(dataList) > 0:
+            print "+++++++++dataList is not empty+++++++++++"
             # print type(dataList)
             # print dataList
             # print dataList[0]
@@ -199,6 +224,8 @@ class QianzhanSpider(scrapy.Spider):
             request.meta['company'] = company
             yield request
         else:
+            print "+++++++++dataList is not empty+++++++++++"
+            # yield company
             url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
             form_data = {
                 'orgCode': company['hdencryptCode'],
@@ -213,6 +240,7 @@ class QianzhanSpider(scrapy.Spider):
         company = response.meta['company']
         json_text = response.body
         json_obj = json.loads(json_text)
+        print "searchitemnb:->", json_obj
         dataList = json_obj['dataList']
 
         company['searchitemnb'] = dataList
@@ -227,12 +255,14 @@ class QianzhanSpider(scrapy.Spider):
         request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemsite)
         request.meta['company'] = company
         yield request
+        # yield company
 
     def parse_searchitemsite(self, response):
         company = response.meta['company']
 
         json_text = response.body
         json_obj = json.loads(json_text)
+        print "searchitemsite:->", json_obj
         dataList = json_obj['dataList']
 
         company['searchitemsite'] = dataList

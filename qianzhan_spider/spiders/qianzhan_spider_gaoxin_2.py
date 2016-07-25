@@ -126,6 +126,25 @@ class QianzhanSpider(scrapy.Spider):
 
         print "company:->", company
 
+        url = "http://qiye.qianzhan.com/orgcompany/getcommentlist"
+        form_data = {
+            'orgCode': company['hdencryptCode'],
+            'page': '1',
+            'pagesize': '5'
+        }
+        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_getcommentlist)
+        request.meta['company'] = company
+        yield request
+
+    def parse_getcommentlist(self, response):
+        company = response.meta['company']
+        json_text = response.body
+        json_obj = json.loads(json_text)
+        print "getcommentlist:->", json_obj
+        dataList = json_obj['dataList']
+
+        company['getcommentlist'] = dataList
+
         url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
         form_data = {
             'orgCode': company['hdencryptCode'],
@@ -134,6 +153,7 @@ class QianzhanSpider(scrapy.Spider):
         request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_SearchItemCCXX)
         request.meta['company'] = company
         yield request
+
 
     def parse_SearchItemCCXX(self, response):
         company = response.meta['company']
