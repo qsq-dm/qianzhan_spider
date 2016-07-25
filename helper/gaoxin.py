@@ -12,6 +12,13 @@ MONGO_DB = "gaoxin"
 mongo_client = pymongo.MongoClient(MONGO_URI)
 db = mongo_client[MONGO_DB]
 
+import sys
+
+reload(sys)
+sys.setdefaultencoding("utf-8")
+print "sys default encoding: ", sys.getdefaultencoding()
+
+
 
 def upsert_company_info_item(item):
     db.company_info.update(
