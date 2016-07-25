@@ -15,7 +15,7 @@ from ..db.mongo import GaoxinDB
 
 
 class QianzhanSpider(scrapy.Spider):
-    name = "qianzhan_spider_ejinsui_2"
+    name = "qianzhan_spider_gaoxin_2"
 
     def start_requests(self):
         url = "http://qiye.qianzhan.com/usercenter/login?ReturnUrl=http%3A%2F%2Fqiye.qianzhan.com%2F"
