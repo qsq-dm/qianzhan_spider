@@ -35,7 +35,7 @@ class QianzhanSpider(scrapy.Spider):
 
         form_data = {
             "userId": "15901487291",
-            "password": "mingzi305603665",
+            "password": "123456",
             "VerifyCode": varifycode.replace(' ', ''),
             "sevenDays": "false"
         }
