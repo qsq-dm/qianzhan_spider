@@ -75,6 +75,41 @@ class QianzhanSpider(scrapy.Spider):
             # break
             # break
 
+    def parse_redirect(self, response):
+        """处理重定向"""
+        varifyimage = "/usercenter/varifyimage?" + str(random.random())
+        url = response.urljoin(varifyimage)
+        request = scrapy.Request(url=url, callback=self.parse_varifyimage_2)
+        yield request
+
+    def parse_varifyimage_2(self, response):
+        varifycode = read_body_to_string(response.body)
+        print "varifycode: %s" % varifycode.replace(' ', '')
+
+        # form_data = {
+        #     "VerifyCode": varifycode.replace(' ', ''),
+        #     "sevenDays": "false"
+        # }
+        url = "http://qiye.qianzhan.com/usercenter/CheckVarifyImage?VerifyCode=" + varifycode.replace(' ', '')
+        request = scrapy.FormRequest(url, callback=self.parse_verifycode)
+        request.meta['push_request'] = response.meta['push_request']
+        yield request
+
+    def parse_verifycode(self, response):
+        json_text = response.body
+        json_obj = json.loads(json_text)
+        if json_obj['isSuccess']:
+            request = response.meta['push_request']
+            yield request
+        else:
+            varifyimage = "/usercenter/varifyimage?" + str(random.random())
+            url = response.urljoin(varifyimage)
+            request = scrapy.Request(url=url, callback=self.parse_varifyimage_2)
+            request.meta['push_request'] = response.meta['push_request']
+            yield request
+
+
+
     def parse_list(self, response):
 
         link_li_list = response.xpath('//ul[@class="list-search"]/li/p[@class="tit"]/a')
