@@ -132,44 +132,44 @@ class QianzhanSpider(scrapy.Spider):
         company['hdencryptCode'] = response.xpath('//input[@id="hdencryptCode"]/@value').extract_first()
         company['hdoc_area'] = response.xpath('//input[@id="hdoc_area"]/@value').extract_first()
 
-        url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
-        form_data = {
-            'orgCode': company['hdencryptCode'],
-            'areaCode': company['hdoc_area']
-        }
-        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_SearchItemCCXX)
-        request.meta['company'] = company
-        yield request
+        # url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
+        # form_data = {
+        #     'orgCode': company['hdencryptCode'],
+        #     'areaCode': company['hdoc_area']
+        # }
+        # request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_SearchItemCCXX)
+        # request.meta['company'] = company
+        # yield request
 
-    def parse_SearchItemCCXX(self, response):
-        company = response.meta['company']
-        json_text = response.body
-        json_obj = json.loads(json_text)
-        dataList = json_obj['dataList']
+        # def parse_SearchItemCCXX(self, response):
+        #     company = response.meta['company']
+        #     json_text = response.body
+        #     json_obj = json.loads(json_text)
+        #     dataList = json_obj['dataList']
+        #
+        #     company['SearchItemCCXX'] = dataList
+        #     # print "SearchItemCCXX: ", dataList
+        #
+        #     url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
+        #     form_data = {
+        #         'orgName': company['company_name'],
+        #         'page': '1',
+        #         'pagesize': '10'
+        #     }
+        #     request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemdftz)
+        #     request.meta['company'] = company
+        #     yield request
 
-        company['SearchItemCCXX'] = dataList
-        # print "SearchItemCCXX: ", dataList
-
-        url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
-        form_data = {
-            'orgName': company['company_name'],
-            'page': '1',
-            'pagesize': '10'
-        }
-        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemdftz)
-        request.meta['company'] = company
-        yield request
-
-    def parse_searchitemdftz(self, response):
-        company = response.meta['company']
-        json_text = response.body
-        json_obj = json.loads(json_text)
-        dataList = json_obj['dataList']
-
-        company['searchitemdftz'] = dataList
-        # print "searchitemdftz: ", dataList
-
-
+        # def parse_searchitemdftz(self, response):
+        #     company = response.meta['company']
+        #     json_text = response.body
+        #     json_obj = json.loads(json_text)
+        #     dataList = json_obj['dataList']
+        #
+        #     company['searchitemdftz'] = dataList
+        #     # print "searchitemdftz: ", dataList
+        #
+        #
         url = "http://qiye.qianzhan.com/orgcompany/searchitemnbinfo"
         form_data = {
             'orgCode': company['hdencryptCode'],
@@ -183,6 +183,7 @@ class QianzhanSpider(scrapy.Spider):
         company = response.meta['company']
         json_text = response.body
         json_obj = json.loads(json_text)
+        print "info:->", json_obj
         dataList = json_obj['dataList']
 
         if isinstance(dataList, dict):
@@ -191,7 +192,7 @@ class QianzhanSpider(scrapy.Spider):
         company['searchitemnbinfo'] = dataList
         # print "searchitemnbinfo: ", dataList
 
-        if len(dataList) > 0:
+        if dataList and len(dataList) > 0:
             # print type(dataList)
             # print dataList
             # print dataList[0]
@@ -205,43 +206,46 @@ class QianzhanSpider(scrapy.Spider):
             request.meta['company'] = company
             yield request
         else:
-            url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
-            form_data = {
-                'orgCode': company['hdencryptCode'],
-                'page': '1',
-                'pagesize': '10'
-            }
-            request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemsite)
-            request.meta['company'] = company
-            yield request
+            yield company
+            #     url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
+            #     form_data = {
+            #         'orgCode': company['hdencryptCode'],
+            #         'page': '1',
+            #         'pagesize': '10'
+            #     }
+            #     request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemsite)
+            #     request.meta['company'] = company
+            #     yield request
 
     def parse_searchitemnb(self, response):
         company = response.meta['company']
         json_text = response.body
         json_obj = json.loads(json_text)
+        print "mnb:->", json_obj
         dataList = json_obj['dataList']
 
         company['searchitemnb'] = dataList
         # print "searchitemnb: ", dataList
 
-        url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
-        form_data = {
-            'orgCode': company['hdencryptCode'],
-            'page': '1',
-            'pagesize': '10'
-        }
-        request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemsite)
-        request.meta['company'] = company
-        yield request
-
-    def parse_searchitemsite(self, response):
-        company = response.meta['company']
-
-        json_text = response.body
-        json_obj = json.loads(json_text)
-        dataList = json_obj['dataList']
-
-        company['searchitemsite'] = dataList
-        # print "searchitemsite: ", dataList
-
+        # url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
+        # form_data = {
+        #     'orgCode': company['hdencryptCode'],
+        #     'page': '1',
+        #     'pagesize': '10'
+        # }
+        # request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemsite)
+        # request.meta['company'] = company
+        # yield request
         yield company
+
+        # def parse_searchitemsite(self, response):
+        #     company = response.meta['company']
+        #
+        #     json_text = response.body
+        #     json_obj = json.loads(json_text)
+        #     dataList = json_obj['dataList']
+        #
+        #     company['searchitemsite'] = dataList
+        #     # print "searchitemsite: ", dataList
+        #
+        #     yield company
