@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
 __author__ = 'zhaojm'
 
-from scrapy.contrib.downloadermiddleware.redirect import BaseRedirectMiddleware
+from scrapy.contrib.downloadermiddleware.redirect import urljoin
 from scrapy.utils.python import to_native_str
-from six.moves.urllib.parse import urljoin
+# from six.moves.urllib.parse import urljoin
 import scrapy
 
 
