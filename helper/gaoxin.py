@@ -32,4 +32,4 @@ if __name__ == "__main__":
         line = line.strip()
         if line:
             upsert_company_info_item({"company_name": line})
-            print line
+            # print line
