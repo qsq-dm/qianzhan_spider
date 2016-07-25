@@ -44,6 +44,7 @@ class CompanyInfoItem(scrapy.Item):
 
     url = scrapy.Field()  # 官网
 
+    getcommentlist = scrapy.Field()
     SearchItemCCXX = scrapy.Field()
     searchitemdftz = scrapy.Field()
     searchitemnbinfo = scrapy.Field()
