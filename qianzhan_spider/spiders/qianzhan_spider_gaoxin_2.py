@@ -76,6 +76,7 @@ class QianzhanSpider(scrapy.Spider):
             # break
 
     def parse_redirect(self, response):
+        print "+++++++++++parse_redirect++++++++++++++++"
         """处理重定向"""
         varifyimage = "/usercenter/varifyimage?" + str(random.random())
         url = response.urljoin(varifyimage)
@@ -100,6 +101,7 @@ class QianzhanSpider(scrapy.Spider):
         json_obj = json.loads(json_text)
         if json_obj['isSuccess']:
             request = response.meta['push_request']
+            print "++++++++++UserVarify  success+++, request.url:->", request.url
             yield request
         else:
             varifyimage = "/usercenter/varifyimage?" + str(random.random())
