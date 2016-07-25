@@ -54,3 +54,9 @@ class MongoPipelineEjinsui(object):
     def process_item(self, item, spider):
         CompanyInfoItemsDB.upsert_ejinsui(dict(item))
         return item
+
+
+class MongoPipelineGaoxin(object):
+    def process_item(self, item, spider):
+        CompanyInfoItemsDB.upsert_gaoxin(dict(item))
+        return item

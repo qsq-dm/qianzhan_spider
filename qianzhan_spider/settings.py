@@ -34,7 +34,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 0.3
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -85,8 +85,9 @@ ITEM_PIPELINES = {
     'qianzhan_spider.pipelines.ValidParamsPipeline': 100,
     # '_56ye_spider.pipelines.DuplicatesPipeline': 200,
     # '_56ye_spider.pipelines.CheckProxyPipeline': 300,
-    'qianzhan_spider.pipelines.MongoPipeline': 400,
+    # 'qianzhan_spider.pipelines.MongoPipeline': 400,
     # 'qianzhan_spider.pipelines.MongoPipelineEjinsui': 400,
+    'qianzhan_spider.pipelines.MongoPipelineGaoxin': 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
