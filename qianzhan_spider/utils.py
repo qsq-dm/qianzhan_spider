@@ -23,3 +23,4 @@ def get_gb2312_txt():
 def get_1000_txt():
     f = codecs.open('data/1000.txt', 'r', 'utf-8')
     return f.read()
+
