@@ -195,7 +195,7 @@ class QianzhanSpider(scrapy.Spider):
                 'areaCode': company['hdoc_area'],
                 'year': str(dataList[0].get('year')),
             }
-            request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemnbinfo)
+            request = scrapy.FormRequest(url=url, formdata=form_data, callback=self.parse_searchitemnb)
             request.meta['company'] = company
             yield request
         else:
