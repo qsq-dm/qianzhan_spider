@@ -52,7 +52,7 @@ class Spider(object):
         if not json_obj.get("isSuccess"):
             max_times -= 1
             if max_times > 0:
-                varifycode = self._get_varifyimage(False)
+                varifycode = self._get_varifyimage()
                 return self._do_login(userId, password, varifycode, varifycode)
             else:
                 return False
@@ -218,6 +218,15 @@ class Spider(object):
 
         response = self._session.get(url)
         # print(response.text)
+
+        if response.status_code == 302:
+            isSuccess = self.do_verify()
+            if not isSuccess:
+                print "++++++++error+++++++++"
+                print "...status............."
+                print "++++++++error+++++++++"
+                return
+
         soup = BeautifulSoup(response.text, 'lxml')
 
         link_li_list = soup.select("body ul[class='list-search'] li p[class='tit'] a")
@@ -232,6 +241,27 @@ class Spider(object):
             next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
             print "next_page_url:->" + next_page_url
             self.get_search(next_page_url)
+
+    '''++++++++++++++++++userverify+++++++++++++++++++'''
+
+    def do_verify(self, max_times=10):
+        varifycode = self._get_varifyimage()
+
+        # form_data = {
+        #     "VerifyCode": varifycode.replace(' ', ''),
+        #     "sevenDays": "false"
+        # }
+        url = "http://qiye.qianzhan.com/usercenter/CheckVarifyImage?VerifyCode=" + varifycode.replace(' ', '')
+        response = self._session.post(url)
+        json_obj = response.json()
+
+        if not json_obj.get("isSuccess"):
+            max_times -= 1
+            if max_times > 0:
+                self.do_verify(max_times)
+            else:
+                return False
+        return True
 
     '''++++++++++++++++++run+++++++++++++++++++'''
     def run(self):
