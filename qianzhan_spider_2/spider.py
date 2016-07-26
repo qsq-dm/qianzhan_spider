@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 __author__ = 'zhaojm'
 
-import requests
+
 import json
 import random
 import time
@@ -13,17 +13,22 @@ from captcha import read_body_to_string
 
 from utils import get_1000_txt
 
+from mongo import CompanyDB
+
+from http_client import HTTPClient
+
 
 class Spider(object):
     def __init__(self):
-        self._session = requests.Session()
+        self._http_client = HTTPClient()
+        self._company_detail_url_list = []
         pass
 
     ''' ++++++++++login+++++++++++++++++++++'''
 
     def _per_login(self):
         login_page_url = "http://qiye.qianzhan.com/usercenter/login?ReturnUrl=http%3A%2F%2Fqiye.qianzhan.com%2F"
-        response = self._session.get(login_page_url)
+        response = self._http_client.get(login_page_url)
         return self._get_varifyimage(True)
 
     def _get_varifyimage(self, is_first=False):
@@ -32,7 +37,7 @@ class Spider(object):
         else:
             varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage?" + str(random.random())
 
-        response = self._session.get(varifyimage_url)
+        response = self._http_client.get(varifyimage_url)
         varifycode = read_body_to_string(response.content)
         print "varifycode: %s" % varifycode.replace(' ', '')
         return varifycode
@@ -46,7 +51,7 @@ class Spider(object):
         }
 
         login_url = "http://qiye.qianzhan.com/usercenter/dologin"
-        response = self._session.post(login_url, form_data)
+        response = self._http_client.post(login_url, form_data)
 
         json_obj = response.json()
         if not json_obj.get("isSuccess"):
@@ -73,7 +78,7 @@ class Spider(object):
             'page': '1',
             'pagesize': '5'
         }
-        response = self._session.post(url=url, formdata=form_data)
+        response = self._http_client.post(url=url, formdata=form_data)
         json_obj = response.json()
         # json_obj = json.loads(json_text)
         print "getcommentlist:->", json_obj
@@ -86,7 +91,7 @@ class Spider(object):
             'orgCode': hdencryptCode,
             'areaCode': hdoc_area
         }
-        response = self._session.post(url=url, formdata=form_data)
+        response = self._http_client.post(url=url, formdata=form_data)
 
         json_obj = response.json()
         # json_obj = json.loads(json_text)
@@ -101,7 +106,7 @@ class Spider(object):
             'page': '1',
             'pagesize': '10'
         }
-        response = self._session.post(url=url, formdata=form_data)
+        response = self._http_client.post(url=url, formdata=form_data)
 
         json_obj = response.json()
         # json_obj = json.loads(json_text)
@@ -115,7 +120,7 @@ class Spider(object):
             'orgCode': hdencryptCode,
             'areaCode': hdoc_area
         }
-        response = self._session.post(url=url, formdata=form_data)
+        response = self._http_client.post(url=url, formdata=form_data)
         json_obj = response.json()
         # json_obj = json.loads(json_text)
         print "searchitemnbinfo:->", json_obj
@@ -139,7 +144,7 @@ class Spider(object):
             'areaCode': hdoc_area,
             'year': str(year),
         }
-        response = self._session.post(url=url, formdata=form_data)
+        response = self._http_client.post(url=url, formdata=form_data)
         json_obj = response.json()
         # json_obj = json.loads(json_text)
         print "searchitemnb:->", json_obj
@@ -154,7 +159,7 @@ class Spider(object):
             'page': '1',
             'pagesize': '10'
         }
-        response = self._session.post(url=url, formdata=form_data)
+        response = self._http_client.post(url=url, formdata=form_data)
         json_obj = response.json()
         # json_obj = json.loads(json_text)
         print "searchitemsite:->", json_obj
@@ -162,7 +167,13 @@ class Spider(object):
         return dataList
 
     def get_company(self, url):
-        response = self._session.get(url)
+
+        if url in self._company_detail_url_list:
+            return
+        else:
+            self._company_detail_url_list.append(url)
+
+        response = self._http_client.get(url)
         # print(response.text)
         soup = BeautifulSoup(response.text, 'lxml')
 
@@ -216,7 +227,7 @@ class Spider(object):
 
     def get_search(self, url):
 
-        response = self._session.get(url, allow_redirects=False)
+        response = self._http_client.get(url, allow_redirects=False)
         # print(response.text)
 
         if response.status_code == 302:
@@ -238,6 +249,7 @@ class Spider(object):
             company_url = urljoin("http://qiye.qianzhan.com/", href)
             print "company_url:->" + company_url
             company = self.get_company(company_url)
+            CompanyDB.upsert_company(company)  # upsert company
 
         next_page_href = soup.select_one('body a[class="next"]')['href']
         if next_page_href:
@@ -248,7 +260,7 @@ class Spider(object):
     '''++++++++++++++++++userverify+++++++++++++++++++'''
 
     def _pre_varify(self, url):
-        response = self._session.get(url)
+        response = self._http_client.get(url)
         return self._get_varifyimage()
 
     def _do_verify(self, varifycode, max_times=10):
@@ -258,7 +270,7 @@ class Spider(object):
         # }
         check_varify_image_url = "http://qiye.qianzhan.com/usercenter/CheckVarifyImage?VerifyCode=" + varifycode.replace(
             ' ', '')
-        response = self._session.post(check_varify_image_url)
+        response = self._http_client.post(check_varify_image_url)
         json_obj = response.json()
 
         if not json_obj.get("isSuccess"):
@@ -280,7 +292,7 @@ class Spider(object):
         txt = get_1000_txt()
         for i in range(len(txt)):
             for j in range(len(txt)):
-                if i >= 27 and j >= 559:
+                if i >= 0 and j >= 1000:
                     search_key = txt[i] + txt[j]
                     # search_key = u'一三'
                     print "++++++1000+++++++: %s %d %d %d %s" % (
@@ -298,8 +310,8 @@ class Spider(object):
 
 '''
  TODO :
- 处理重复url
- 存储到mongo
- 限制爬取速度
+ ok处理重复url
+ ok存储到mongo
+ ok限制爬取速度
 
 '''
