@@ -216,16 +216,19 @@ class Spider(object):
 
     def get_search(self, url):
 
-        response = self._session.get(url)
+        response = self._session.get(url, allow_redirects=False)
         # print(response.text)
 
         if response.status_code == 302:
-            isSuccess = self.do_verify()
+            location = response.headers['Location']
+            isSuccess = self.do_verify(location)
             if not isSuccess:
                 print "++++++++error+++++++++"
                 print "...status............."
                 print "++++++++error+++++++++"
                 return
+            else:
+                self.get_search(url)
 
         soup = BeautifulSoup(response.text, 'lxml')
 
@@ -244,24 +247,33 @@ class Spider(object):
 
     '''++++++++++++++++++userverify+++++++++++++++++++'''
 
-    def do_verify(self, max_times=10):
-        varifycode = self._get_varifyimage()
+    def _pre_varify(self, url):
+        response = self._session.get(url)
+        return self._get_varifyimage()
 
+    def _do_verify(self, varifycode, max_times=10):
         # form_data = {
         #     "VerifyCode": varifycode.replace(' ', ''),
         #     "sevenDays": "false"
         # }
-        url = "http://qiye.qianzhan.com/usercenter/CheckVarifyImage?VerifyCode=" + varifycode.replace(' ', '')
-        response = self._session.post(url)
+        check_varify_image_url = "http://qiye.qianzhan.com/usercenter/CheckVarifyImage?VerifyCode=" + varifycode.replace(
+            ' ', '')
+        response = self._session.post(check_varify_image_url)
         json_obj = response.json()
 
         if not json_obj.get("isSuccess"):
             max_times -= 1
             if max_times > 0:
-                self.do_verify(max_times)
+                varifycode = self._get_varifyimage()
+                self._do_verify(varifycode, max_times)
             else:
                 return False
         return True
+
+    def do_verify(self, url):
+        varifycode = self._pre_varify(url)
+        is_success = self._do_verify(varifycode)
+        return is_success
 
     '''++++++++++++++++++run+++++++++++++++++++'''
     def run(self):
@@ -282,3 +294,12 @@ class Spider(object):
                         search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=1"
 
                     self.get_search(url)
+
+
+'''
+ TODO :
+ 处理重复url
+ 存储到mongo
+ 限制爬取速度
+
+'''
