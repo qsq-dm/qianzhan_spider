@@ -313,5 +313,5 @@ class Spider(object):
  ok处理重复url
  ok存储到mongo
  ok限制爬取速度
-
+ 日志
 '''
