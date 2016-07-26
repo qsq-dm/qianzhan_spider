@@ -60,7 +60,7 @@ class QianzhanSpider(scrapy.Spider):
         txt = get_1000_txt()
         for i in range(len(txt)):
             for j in range(len(txt)):
-                if i >= 27 and j >= 559:
+                if i >= 0 and j >= 1000:
                     search_key = txt[i] + txt[j]
                     # search_key = u'一三'
                     print "++++++1000+++++++: %s %d %d %d %s" % (
