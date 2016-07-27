@@ -33,10 +33,7 @@ class Spider(object):
         print "txt len:->", len(self._txt)
         pass
 
-    def login(self):
-        return self._qianzhan_client.login(self._userId, self._password)
-
-    def get_company(self, url):
+    def _get_company(self, url):
         print "get_company:->", url
 
         if url in self._company_detail_url_list:
@@ -102,7 +99,7 @@ class Spider(object):
 
         return company
 
-    def get_search(self, search_key):
+    def _get_search(self, search_key):
 
         response = self._qianzhan_client.get_search(search_key)
         # print(response.text)
@@ -112,21 +109,15 @@ class Spider(object):
             isSuccess = self._qianzhan_client.do_verify(location)
             if not isSuccess:
                 print "++++++++do verify not success+++++++++"
-                print "...run again............."
-                isSuccess = self.login()
+                print "...login again............."
+                isSuccess = self._login()
                 if isSuccess:
-                    print "********************"
-                    print "login success!"
-                    print "********************"
-                    self.get_search(search_key)
+                    self._get_search(search_key)
                 else:
-                    print "********************"
-                    print "login error......."
-                    print "********************"
-                    pass
-                return
+                    print "++++++++++++++over!!++++not success++++++++++++++++"
             else:
-                self.get_search(search_key)
+                self._get_search(search_key)
+            return
 
         soup = BeautifulSoup(response.text, 'lxml')
 
@@ -138,7 +129,7 @@ class Spider(object):
             print "company_name:->", company_name
             print "company_url:->" + company_url
             try:
-                company = self.get_company(company_url)
+                company = self._get_company(company_url)
                 CompanyDB.upsert_company(company)  # upsert company
             except Exception, e:
                 print "get_company exception, company_name:->", company_name
@@ -152,7 +143,7 @@ class Spider(object):
         if next_page_href:
             next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
             print "next_page_url:->" + next_page_url
-            self.get_search(next_page_url)
+            self._get_search(next_page_url)
 
     def _run(self):
         for i in range(len(self._txt)):
@@ -161,23 +152,35 @@ class Spider(object):
                 # search_key = u'在线途游(北京)科技有限公司'
                 # search_key = u'北京'
                 print "++++++1000+++++++: %s %d %d %d %s" % (
-                    time.strftime('%Y-%m-%d', time.localtime(time.time())), i, j, len(self._txt), search_key)
+                    time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), i, j, len(self._txt), search_key)
+                try:
+                    self._get_search(search_key)
+                except Exception, e:
+                    print "++++++one search exception+++++++: %s %d %d %d %s" % (
+                        time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), i, j, len(self._txt),
+                        search_key)
+                    print e.message
+                    pass
 
-                self.get_search(search_key)
-
-
-    def run(self):
-        print "+++++++++++++run++++++++++++++++"
-
-        isSuccess = self.login()
+    def _login(self):
+        isSuccess = self._qianzhan_client.login(self._userId, self._password)
         if isSuccess:
             print "********************"
             print "login success!"
             print "********************"
-
-            self._run()
         else:
             print "********************"
             print "login error......."
             print "********************"
+            pass
+        return isSuccess
+
+    def run(self):
+        print "+++++++++++++run++++++++++++++++"
+        isSuccess = self._login()
+        if isSuccess:
+            self._run()
+            print "++++++++++++++success!!++++++++finish++++++++"
+        else:
+            print "++++++++++++++over!!++++not success++++++++++++++++"
             pass
