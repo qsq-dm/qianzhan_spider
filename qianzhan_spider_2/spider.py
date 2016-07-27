@@ -28,8 +28,6 @@ class Spider(object):
         pass
 
     def _get_company(self, url):
-        print "get_company:->", url
-
         if url in self._company_detail_url_list:
             return
         else:
@@ -121,7 +119,7 @@ class Spider(object):
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
             print "company_name:->", company_name
-            print "company_url:->" + company_url
+            # print "company_url:->" + company_url
             try:
                 company = self._get_company(company_url)
                 CompanyDB.upsert_company(company)  # upsert company
@@ -135,7 +133,10 @@ class Spider(object):
             next_page_href = None
             pass
         if next_page_href:
-            next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
+            if next_page_href.find("http") < 0:
+                next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
+            else:
+                next_page_url = next_page_href
             print "next_page_url:->" + next_page_url
             self._get_search(next_page_url)
 
