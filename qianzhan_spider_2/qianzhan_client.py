@@ -4,7 +4,7 @@ __author__ = 'zhaojm'
 import json
 import random
 import time
-
+from urlparse import urljoin
 from captcha import read_body_to_string
 from http_client import HTTPClient
 
@@ -59,6 +59,7 @@ class QianzhanClient(object):
         return True
 
     def login(self):
+        print "++++++++++++++login+++++++++++++++++"
         varifycode = self._per_login()
         is_success = self._do_login(varifycode)
         return is_success
@@ -88,7 +89,7 @@ class QianzhanClient(object):
         return True
 
     def do_verify(self, url):
-        print "do_verify:->", url
+        print "++++++++++++++do_verify+++++++++++++++++"
         varifycode = self._pre_varify(url)
         is_success = self._do_verify(varifycode)
         return is_success
@@ -100,7 +101,8 @@ class QianzhanClient(object):
         response = self._http_client.post(url, data, json, **kwargs)
         if response.status_code == 302:
             location = response.headers['Location']
-            is_success = self.do_verify(location)
+            user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
+            is_success = self.do_verify(user_verify_url)
             if is_success:
                 response = self._http_client.post(url, data, json, **kwargs)
             else:
@@ -116,7 +118,8 @@ class QianzhanClient(object):
         response = self._http_client.get(url, **kwargs)
         if response.status_code == 302:
             location = response.headers['Location']
-            is_success = self.do_verify(location)
+            user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
+            is_success = self.do_verify(user_verify_url)
             if is_success:
                 response = self._http_client.get(url, **kwargs)
             else:

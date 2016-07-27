@@ -142,7 +142,7 @@ class Spider(object):
                 try:
                     self._get_search(url)
                 except VerifyFailError, err:
-                    raise err
+                    raise VerifyFailError(i, j)
                 except Exception, e:
                     print "++++++one search exception+++++++: %s %d %d %d %s" % (
                         time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), i, j, len(self._txt),
