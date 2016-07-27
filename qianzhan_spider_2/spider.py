@@ -2,6 +2,7 @@
 __author__ = 'zhaojm'
 
 import time
+import urllib
 from bs4 import BeautifulSoup
 from urlparse import urljoin
 
@@ -9,16 +10,13 @@ from utils import get_1000_txt
 
 from mongo import CompanyDB
 
-# from http_client import HTTPClient
 from qianzhan_client import QianzhanClient
+from exception import VerifyFailError
 
 
 class Spider(object):
     def __init__(self, userId, password):
-        # self._http_client = HTTPClient()
-        self._userId = userId
-        self._password = password
-        self._qianzhan_client = QianzhanClient()
+        self._qianzhan_client = QianzhanClient(userId, password)
         self._company_detail_url_list = []
         self._txt = get_1000_txt()
         # self._txt_len = len(self._txt)
@@ -75,41 +73,25 @@ class Spider(object):
 
         print "company:->", company
 
-        company.update({'getcommentlist': self._qianzhan_client.get_getcommentlist(company['hdencryptCode'])})
-        company.update({'SearchItemCCXX': self._qianzhan_client.get_SearchItemCCXX(company['hdencryptCode'],
+        company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
+        company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
                                                                                    company['hdoc_area'])})
-        company.update({'searchitemdftz': self._qianzhan_client.get_searchitemdftz(company['company_name'])})
-        company.update({'searchitemnbinfo': self._qianzhan_client.get_searchitemnbinfo(company['hdencryptCode'],
+        company.update({'searchitemdftz': self._qianzhan_client.post_searchitemdftz(company['company_name'])})
+        company.update({'searchitemnbinfo': self._qianzhan_client.post_searchitemnbinfo(company['hdencryptCode'],
                                                                                        company['hdoc_area'])})
         if company['searchitemnbinfo'] and len(company['searchitemnbinfo']) > 0:
             company.update(
-                {'searchitemnb': self._qianzhan_client.get_searchitemnb(company['hdencryptCode'], company['hdoc_area'],
-                                                                        company['searchitemnbinfo'][0].get('year'))})
-        company.update({'searchitemsite': self._qianzhan_client.get_searchitemsite(company['hdencryptCode'])})
+                {'searchitemnb': self._qianzhan_client.post_searchitemnb(company['hdencryptCode'], company['hdoc_area'],
+                                                                         company['searchitemnbinfo'][0].get('year'))})
+        company.update({'searchitemsite': self._qianzhan_client.post_searchitemsite(company['hdencryptCode'])})
 
         # print "company:->", company
 
         return company
 
-    def _get_search(self, search_key):
+    def _get_search(self, url):
 
-        response = self._qianzhan_client.get_search(search_key)
-        # print(response.text)
-
-        if response.status_code == 302:
-            location = response.headers['Location']
-            isSuccess = self._qianzhan_client.do_verify(location)
-            if not isSuccess:
-                print "++++++++do verify not success+++++++++"
-                print "...login again............."
-                isSuccess = self._login()
-                if isSuccess:
-                    self._get_search(search_key)
-                else:
-                    print "++++++++++++++over!!++++not success++++++++++++++++"
-            else:
-                self._get_search(search_key)
-            return
+        response = self._qianzhan_client.get_search(url)
 
         soup = BeautifulSoup(response.text, 'lxml')
 
@@ -119,12 +101,13 @@ class Spider(object):
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
             print "company_name:->", company_name
-            # print "company_url:->" + company_url
             try:
                 company = self._get_company(company_url)
                 CompanyDB.upsert_company(company)  # upsert company
+            except VerifyFailError, err:
+                raise err
             except Exception, e:
-                print "get_company exception, company_name:->", company_name
+                print "++++++++++get_company exception+++++++++, company_name:->", company_name
                 print e
                 pass
         try:
@@ -148,8 +131,18 @@ class Spider(object):
                 # search_key = u'北京'
                 print "++++++1000+++++++: %s %d %d %d %s" % (
                     time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), i, j, len(self._txt), search_key)
+                # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
+                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+                #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
+                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+                #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
+                url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
+                    search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
+
                 try:
-                    self._get_search(search_key)
+                    self._get_search(url)
+                except ValueError, err:
+                    raise err
                 except Exception, e:
                     print "++++++one search exception+++++++: %s %d %d %d %s" % (
                         time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), i, j, len(self._txt),
@@ -158,24 +151,25 @@ class Spider(object):
                     pass
 
     def _login(self):
-        isSuccess = self._qianzhan_client.login(self._userId, self._password)
+        isSuccess = self._qianzhan_client.login()
         if isSuccess:
-            print "********************"
-            print "login success!"
-            print "********************"
+            return isSuccess
         else:
-            print "********************"
-            print "login error......."
-            print "********************"
-            pass
-        return isSuccess
+            raise VerifyFailError()
 
     def run(self):
         print "+++++++++++++run++++++++++++++++"
-        isSuccess = self._login()
-        if isSuccess:
-            self._run()
-            print "++++++++++++++success!!++++++++finish++++++++"
-        else:
-            print "++++++++++++++over!!++++not success++++++++++++++++"
+        try:
+            isSuccess = self._login()
+            if isSuccess:
+                self._run()
+                print "++++++++++++++success!!++++++++finish++++++++"
+        except VerifyFailError, err:
+            print "++++++++++++++++VerifyFailError++++++++++++++"
+            print err.message
+        except Exception, e:
+            print e.message
             pass
+
+
+            # TODO 异常处理, 日志记录到文本

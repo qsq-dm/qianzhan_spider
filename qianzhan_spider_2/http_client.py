@@ -4,9 +4,11 @@ __author__ = 'zhaojm'
 import requests
 import time
 
+from config import download_delay
+
 
 class HTTPClient(object):
-    def __init__(self, min_time_interval=3):
+    def __init__(self, min_time_interval=download_delay):
         self._session = requests.Session()
         self._min_time_interval = min_time_interval * 1000
         self._last_request_time = -1

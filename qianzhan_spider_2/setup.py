@@ -6,14 +6,9 @@ from config import userId, password
 
 
 def main():
-    # try:
     spider = Spider(userId, password)
     spider.run()
-
-    # except Exception, e:
-    #     print "main:->Exception->" + e.message
     pass
-
 
 if __name__ == "__main__":
     main()
