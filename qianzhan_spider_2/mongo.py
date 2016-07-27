@@ -2,6 +2,7 @@
 __author__ = 'zhaojm'
 
 import pymongo
+import logging
 
 # MONGO
 MONGO_URI = "localhost:27017"
@@ -23,5 +24,5 @@ class CompanyDB(object):
 
     @staticmethod
     def upsert_company(item):
-        print "upsert:->", item
+        logging.info("<MONGO> %s" % item)
         db.company_info_items.update({'company_name': item['company_name']}, {'$set': item}, True, True)

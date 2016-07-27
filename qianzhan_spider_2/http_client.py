@@ -6,6 +6,9 @@ import time
 
 from config import download_delay
 
+import logging
+import json
+
 
 class HTTPClient(object):
     def __init__(self, min_time_interval=download_delay):
@@ -25,14 +28,16 @@ class HTTPClient(object):
 
     def post(self, url, data=None, json=None, **kwargs):
         self._set_last_request_time()
-        print "post:->", url, data, json
+        logging.info("<POST %s> %s" % (url, data))
         response = self._session.post(url, data, json, **kwargs)
-        print "response:->", response.status_code
+        logging.info("<response %d>" % response.status_code)
+        # print "response:->", response.status_code
         return response
 
     def get(self, url, **kwargs):
         self._set_last_request_time()
-        print "get:->", url
+        logging.info("<GET %s>" % url)
         response = self._session.get(url, **kwargs)
-        print "response:->", response.status_code
+        logging.info("<response %d> %s" % (response.status_code, response.content))
+        # print "response:->", response.status_code
         return response

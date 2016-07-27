@@ -3,6 +3,7 @@ __author__ = 'zhaojm'
 
 import time
 import urllib
+import logging
 from bs4 import BeautifulSoup
 from urlparse import urljoin
 
@@ -22,7 +23,7 @@ class Spider(object):
         # self._txt_len = len(self._txt)
         # self._i = 0
         # self._j = 0
-        print "txt len:->", len(self._txt)
+        logging.info("txt len:->%d" % len(self._txt))
         pass
 
     def _get_company(self, url):
@@ -71,7 +72,7 @@ class Spider(object):
             'hdoc_area': soup.select_one('input[id="hdoc_area"]')['value']
         })
 
-        print "company:->", company
+        logging.debug("company:->%s" % company)
 
         company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
         company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
@@ -100,15 +101,14 @@ class Spider(object):
             href = tag['href']
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
-            print "company_name:->", company_name
+            logging.info("company_name:->%s" % company_name)
             try:
                 company = self._get_company(company_url)
                 CompanyDB.upsert_company(company)  # upsert company
             except VerifyFailError, err:
                 raise err
             except Exception, e:
-                print "++++++++++get_company exception+++++++++, company_name:->", company_name
-                print e
+                logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
                 pass
         try:
             next_page_href = soup.select_one('body a[class="next"]')['href']
@@ -120,7 +120,7 @@ class Spider(object):
                 next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
             else:
                 next_page_url = next_page_href
-            print "next_page_url:->" + next_page_url
+            # print "next_page_url:->" + next_page_url
             self._get_search(next_page_url)
 
     def _run(self):
@@ -129,8 +129,7 @@ class Spider(object):
                 search_key = self._txt[i] + self._txt[j]
                 # search_key = u'在线途游(北京)科技有限公司'
                 # search_key = u'北京'
-                print "++++++1000+++++++: %s %d %d %d %s" % (
-                    time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), i, j, len(self._txt), search_key)
+                logging.info("crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
                 # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
                 # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
                 #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
@@ -144,25 +143,23 @@ class Spider(object):
                 except VerifyFailError, err:
                     raise VerifyFailError(i, j)
                 except Exception, e:
-                    print "++++++one search exception+++++++: %s %d %d %d %s" % (
-                        time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), i, j, len(self._txt),
-                        search_key)
-                    print e.message
+                    logging.exception(
+                        "_get_search:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
                     pass
 
     def run(self):
-        print "+++++++++++++run++++++++++++++++"
+        logging.info("+++++++++++++run++++++++++++++++")
         try:
             is_success = self._qianzhan_client.login()
             if is_success:
                 self._run()
-                print "++++++++++++++success!!++++++++finish++++++++"
+                logging.info("++++++++++++++success finish!!!++++++++")
             else:
                 raise VerifyFailError()
         except VerifyFailError, err:
-            print err.message
+            logging.error(err.message)
         except Exception, e:
-            print e.message
+            logging.exception(e.message)
             pass
 
 # TODO 异常处理, 日志记录到文本
