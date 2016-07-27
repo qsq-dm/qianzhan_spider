@@ -25,7 +25,7 @@ def init_logging():
     logging.getLogger('').addHandler(console)
 
     # 定义一个RotatingFileHandler，最多备份5个日志文件，每个日志文件最大10M
-    Rthandler = RotatingFileHandler('log/myapp.log', maxBytes=10 * 1024 * 1024, backupCount=5)
+    Rthandler = RotatingFileHandler('log/myspider.log', maxBytes=10 * 1024 * 1024, backupCount=5)
     Rthandler.setLevel(logging.DEBUG)
     formatter = logging.Formatter(format_str)
     Rthandler.setFormatter(formatter)
