@@ -6,18 +6,12 @@ from config import userId, password
 
 
 def main():
-    try:
-        spider = Spider()
-        isSuccess = spider.login(userId, password)
-        if isSuccess:
-            print "********************"
-            print "login success!"
-            print "********************"
+    # try:
+    spider = Spider(userId, password)
+    spider.run()
 
-            spider.run()
-
-    except Exception, e:
-        print "main:->Exception->" + e.message
+    # except Exception, e:
+    #     print "main:->Exception->" + e.message
     pass
 
 

@@ -23,4 +23,5 @@ class CompanyDB(object):
 
     @staticmethod
     def upsert_company(item):
+        print "upsert:->", item
         db.company_info_items.update({'company_name': item['company_name']}, {'$set': item}, True, True)

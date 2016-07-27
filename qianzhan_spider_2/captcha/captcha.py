@@ -33,4 +33,4 @@ def _format_img(jpg_file):
 
 
 def read_body_to_string(body):
-    return pytesseract.image_to_string(Image.open(_format_img(_convert_to_jpg(io.BytesIO(body)))), 'eng+chi_sim')
+    return pytesseract.image_to_string(Image.open(_format_img(_convert_to_jpg(io.BytesIO(body)))), 'eng')

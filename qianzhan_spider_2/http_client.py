@@ -23,8 +23,14 @@ class HTTPClient(object):
 
     def post(self, url, data=None, json=None, **kwargs):
         self._set_last_request_time()
-        return self._session.post(url, data, json, **kwargs)
+        print "post:->", url, data, json
+        response = self._session.post(url, data, json, **kwargs)
+        print "response:->", response.status_code
+        return response
 
     def get(self, url, **kwargs):
         self._set_last_request_time()
-        return self._session.get(url, **kwargs)
+        print "get:->", url
+        response = self._session.get(url, **kwargs)
+        print "response:->", response.status_code
+        return response
