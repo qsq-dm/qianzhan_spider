@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 # CRITICAL > ERROR > WARNING > INFO > DEBUG > NOTSET
 
 def init_logging():
-    format_str = '%(asctime)s %(filename)s->%(funcName)s[line:%(lineno)d] <%(levelname)s> %(message)s'
+    format_str = '%(asctime)s %(filename)s[line:%(lineno)d] <%(levelname)s> %(message)s'
 
     logging.basicConfig(
         level=logging.DEBUG,

@@ -129,7 +129,8 @@ class Spider(object):
                 search_key = self._txt[i] + self._txt[j]
                 # search_key = u'在线途游(北京)科技有限公司'
                 # search_key = u'北京'
-                logging.info("crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
+                logging.info(
+                    "++++++crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
                 # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
                 # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
                 #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"

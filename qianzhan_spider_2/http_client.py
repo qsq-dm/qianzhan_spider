@@ -38,6 +38,6 @@ class HTTPClient(object):
         self._set_last_request_time()
         logging.info("<GET %s>" % url)
         response = self._session.get(url, **kwargs)
-        logging.info("<response %d> %s" % (response.status_code, response.content))
+        logging.info("<response %d>" % response.status_code)
         # print "response:->", response.status_code
         return response
