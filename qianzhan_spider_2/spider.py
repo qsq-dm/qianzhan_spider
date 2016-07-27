@@ -141,7 +141,7 @@ class Spider(object):
 
                 try:
                     self._get_search(url)
-                except ValueError, err:
+                except VerifyFailError, err:
                     raise err
                 except Exception, e:
                     print "++++++one search exception+++++++: %s %d %d %d %s" % (
@@ -150,26 +150,19 @@ class Spider(object):
                     print e.message
                     pass
 
-    def _login(self):
-        isSuccess = self._qianzhan_client.login()
-        if isSuccess:
-            return isSuccess
-        else:
-            raise VerifyFailError()
-
     def run(self):
         print "+++++++++++++run++++++++++++++++"
         try:
-            isSuccess = self._login()
-            if isSuccess:
+            is_success = self._qianzhan_client.login()
+            if is_success:
                 self._run()
                 print "++++++++++++++success!!++++++++finish++++++++"
+            else:
+                raise VerifyFailError()
         except VerifyFailError, err:
-            print "++++++++++++++++VerifyFailError++++++++++++++"
             print err.message
         except Exception, e:
             print e.message
             pass
 
-
-            # TODO 异常处理, 日志记录到文本
+# TODO 异常处理, 日志记录到文本
