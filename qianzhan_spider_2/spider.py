@@ -28,7 +28,7 @@ class Spider(object):
 
     def _get_company(self, url):
         if url in self._company_detail_url_list:
-            return
+            return None
         else:
             self._company_detail_url_list.append(url)
 
@@ -104,7 +104,8 @@ class Spider(object):
             logging.info("company_name:->%s" % company_name)
             try:
                 company = self._get_company(company_url)
-                CompanyDB.upsert_company(company)  # upsert company
+                if company:
+                    CompanyDB.upsert_company(company)  # upsert company
             except VerifyFailError, err:
                 raise err
             except Exception, e:
