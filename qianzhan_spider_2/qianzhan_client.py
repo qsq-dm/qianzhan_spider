@@ -146,7 +146,7 @@ class QianzhanClient(object):
     def get_searchitemnb(self, hdencryptCode, hdoc_area, year):
         # print "searchitemnbinfo: ", dataList
 
-        print "+++++++++dataList is not empty+++++++++++"
+        # print "+++++++++dataList is not empty+++++++++++"
         # print type(dataList)
         # print dataList
         # print dataList[0]
