@@ -1,13 +1,11 @@
 # -*- coding:utf-8 -*-
 __author__ = 'zhaojm'
-from urlparse import urljoin
-
-from captcha import read_body_to_string
 
 import json
 import random
 import time
 import urllib
+from captcha import read_body_to_string
 from http_client import HTTPClient
 
 

@@ -1,15 +1,9 @@
 # -*- coding:utf-8 -*-
 __author__ = 'zhaojm'
 
-
-import json
-import random
 import time
-import urllib
 from bs4 import BeautifulSoup
 from urlparse import urljoin
-
-from captcha import read_body_to_string
 
 from utils import get_1000_txt
 
