@@ -163,5 +163,3 @@ class Spider(object):
         except Exception, e:
             logging.exception(e.message)
             pass
-
-# TODO 异常处理, 日志记录到文本
