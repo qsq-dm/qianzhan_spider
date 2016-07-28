@@ -15,7 +15,7 @@ db = mongo_client[MONGO_DB]
 
 # neeq_db = mongo_client[MONGO_NEEQ_DB]
 # ejinsui_db = mongo_client['ejinsui']
-# gaoxin_db = mongo_client['gaoxin']
+gaoxin_db = mongo_client['gaoxin']
 
 
 class CompanyDB(object):
@@ -26,3 +26,17 @@ class CompanyDB(object):
     def upsert_company(item):
         logging.info("<MONGO> %s" % item)
         db.company_info_items.update({'company_name': item['company_name']}, {'$set': item}, True, True)
+
+    @staticmethod
+    def upsert_company_gaoxin(item):
+        logging.info("<MONGO> %s" % item)
+        db.company_info_items_gaoxin.update({'company_name': item['company_name']}, {'$set': item}, True, True)
+
+
+class GaoxinDB(object):
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_items():
+        return gaoxin_db.company_info.find().batch_size(50)
