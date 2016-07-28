@@ -146,7 +146,8 @@ class Spider(object):
                     raise VerifyFailError(i, j)
                 except Exception, e:
                     logging.exception(
-                        "_get_search:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
+                        "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (
+                        i, j, len(self._txt), search_key, e.message))
                     pass
 
     def run(self):
