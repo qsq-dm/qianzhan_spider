@@ -42,5 +42,9 @@ if __name__ == "__main__":
             logging.info("<response %d>" % response.status_code)
             if response.status_code == 200:
                 proxy_db.proxy_items_qianzhan.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+            else:
+                proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
         except Exception, e:
             logging.exception(e)
+            proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+        proxy_db.proxy_items.remove({"ip": item['ip'], "port": item['port']})
