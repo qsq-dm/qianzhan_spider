@@ -50,8 +50,8 @@ class HTTPClient(object):
 
     def post(self, url, data=None, json=None, **kwargs):
         self._set_last_request_time()
-        kwargs.setdefault("proxies", self._current_proxies)
-        kwargs.setdefault("timeout", 2)
+        kwargs.update({"proxies", self._current_proxies})
+        kwargs.update({"timeout", 2})
         logging.info("<POST %s> %s %s" % (url, data, kwargs))
         try:
             response = self._session.post(url, data, json, **kwargs)
@@ -67,8 +67,9 @@ class HTTPClient(object):
     def get(self, url, **kwargs):
         self._set_last_request_time()
         logging.info("kwargs: %s, proxies: %s" % (kwargs, self._current_proxies))
-        kwargs.setdefault("proxies", self._current_proxies)
-        kwargs.setdefault("timeout", 2)
+
+        kwargs.update({"proxies", self._current_proxies})
+        kwargs.update({"timeout", 2})
         logging.info("<GET %s %s>" % (url, kwargs))
         try:
             response = self._session.get(url, **kwargs)
