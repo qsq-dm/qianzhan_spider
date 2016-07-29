@@ -66,6 +66,7 @@ class HTTPClient(object):
 
     def get(self, url, **kwargs):
         self._set_last_request_time()
+        logging.info("kwargs: %s, proxies: %s" % (kwargs, self._current_proxies))
         kwargs.setdefault("proxies", self._current_proxies)
         kwargs.setdefault("timeout", 2)
         logging.info("<GET %s %s>" % (url, kwargs))
