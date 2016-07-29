@@ -50,10 +50,15 @@ class HTTPClient(object):
     def post(self, url, data=None, json=None, **kwargs):
         self._set_last_request_time()
         kwargs.setdefault("proxies", self._current_proxies)
+        kwargs.setdefault("timeout", 2)
         logging.info("<POST %s> %s" % (url, data))
-        response = self._session.post(url, data, json, **kwargs)
-        logging.info("<response %d>" % response.status_code)
-        if response.status_code not in (200, 302):
+        try:
+            response = self._session.post(url, data, json, **kwargs)
+            logging.info("<response %d>" % response.status_code)
+            if response.status_code not in (200, 302):
+                self._refresh_proxy()
+                return self.post(url, data, json, **kwargs)
+        except Exception, e:
             self._refresh_proxy()
             return self.post(url, data, json, **kwargs)
         return response
@@ -61,10 +66,15 @@ class HTTPClient(object):
     def get(self, url, **kwargs):
         self._set_last_request_time()
         kwargs.setdefault("proxies", self._current_proxies)
+        kwargs.setdefault("timeout", 2)
         logging.info("<GET %s>" % url)
-        response = self._session.get(url, **kwargs)
-        logging.info("<response %d>" % response.status_code)
-        if response.status_code not in (200, 302):
+        try:
+            response = self._session.get(url, **kwargs)
+            logging.info("<response %d>" % response.status_code)
+            if response.status_code not in (200, 302):
+                self._refresh_proxy()
+                return self.get(url, **kwargs)
+        except Exception, e:
             self._refresh_proxy()
             return self.get(url, **kwargs)
         return response
