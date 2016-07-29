@@ -34,10 +34,10 @@ if __name__ == "__main__":
 
     cur = proxy_db.proxy_items.find({}, {'_id': 0}).batch_size(50)
     for item in cur:
-        logging.info("%s: %s" % (item['ip'], item['port']))
-
-        proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
         time.sleep(0.5)
+        logging.info("%s:%s" % (item['ip'], item['port']))
+        proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
         response = session.get("http://qiye.qianzhan.com/", proxies=proxies)
+        logging.info("<response %d>" % response.status_code)
         if response.status_code == 200:
             proxy_db.proxy_items_qianzhan.update({"ip": item['ip'], "port": item['port']}, item, True, True)
