@@ -37,7 +37,10 @@ if __name__ == "__main__":
         time.sleep(0.3)
         logging.info("%s:%s" % (item['ip'], item['port']))
         proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
-        response = session.get("http://qiye.qianzhan.com/", proxies=proxies)
-        logging.info("<response %d>" % response.status_code)
-        if response.status_code == 200:
-            proxy_db.proxy_items_qianzhan.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+        try:
+            response = session.get("http://qiye.qianzhan.com/", proxies=proxies, timeout=2)
+            logging.info("<response %d>" % response.status_code)
+            if response.status_code == 200:
+                proxy_db.proxy_items_qianzhan.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+        except Exception, e:
+            logging.exception(e)
