@@ -31,6 +31,7 @@ class QianzhanSpider(scrapy.Spider):
                 #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=1"
                 url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
                     search_key.encode('utf-8')) + "/?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
+
                 # print url
                 request = scrapy.Request(
                     url,
