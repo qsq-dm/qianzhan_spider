@@ -48,3 +48,4 @@ if __name__ == "__main__":
             logging.exception(e)
             proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
         proxy_db.proxy_items.remove({"ip": item['ip'], "port": item['port']})
+        proxy_db.proxy_items_all.update({"ip": item['ip'], "port": item['port']}, item, True, True)
