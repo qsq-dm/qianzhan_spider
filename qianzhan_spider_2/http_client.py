@@ -43,6 +43,7 @@ class HTTPClient(object):
             item = self._proxy_cur.next()
             # item = self._proxy_cur[1]
             self._current_proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
+            logging.info("proxy: %s" % self._current_proxies)
         except Exception, e:
             self._refresh_proxy_cur()
             self._refresh_proxy()
