@@ -13,8 +13,12 @@ import json
 class HTTPClient(object):
     def __init__(self, min_time_interval=download_delay):
         self._session = requests.Session()
+        self._session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+        })
         self._min_time_interval = min_time_interval * 1000
         self._last_request_time = -1
+
         pass
 
     def _set_last_request_time(self):

@@ -68,9 +68,9 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-    'qianzhan_spider.middlewares.MyRedirectMiddleware': 543,
-}
+# DOWNLOADER_MIDDLEWARES = {
+#     'qianzhan_spider.middlewares.MyRedirectMiddleware': 543,
+# }
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -85,9 +85,9 @@ ITEM_PIPELINES = {
     'qianzhan_spider.pipelines.ValidParamsPipeline': 100,
     # '_56ye_spider.pipelines.DuplicatesPipeline': 200,
     # '_56ye_spider.pipelines.CheckProxyPipeline': 300,
-    # 'qianzhan_spider.pipelines.MongoPipeline': 400,
+    'qianzhan_spider.pipelines.MongoPipeline': 400,
     # 'qianzhan_spider.pipelines.MongoPipelineEjinsui': 400,
-    'qianzhan_spider.pipelines.MongoPipelineGaoxin': 400,
+    # 'qianzhan_spider.pipelines.MongoPipelineGaoxin': 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

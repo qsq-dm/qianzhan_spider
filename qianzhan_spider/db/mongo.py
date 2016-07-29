@@ -13,8 +13,8 @@ MONGO_DB = "qianzhan"
 mongo_client = pymongo.MongoClient(MONGO_URI)
 db = mongo_client[MONGO_DB]
 # neeq_db = mongo_client[MONGO_NEEQ_DB]
-ejinsui_db = mongo_client['ejinsui']
-gaoxin_db = mongo_client['gaoxin']
+# ejinsui_db = mongo_client['ejinsui']
+# gaoxin_db = mongo_client['gaoxin']
 
 
 class CompanyInfoItemsDB(object):
