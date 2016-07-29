@@ -114,11 +114,11 @@ ITEM_PIPELINES = {
 
 
 # LOG
-LOG_FILE = 'log/%s.log' % datetime.datetime.now().strftime('%Y-%m-%d')
-# CRITICAL、 ERROR、WARNING、INFO、DEBUG
-LOG_LEVEL = 'DEBUG'
-# 所有标准输出重定向到log
-LOG_STDOUT = True
+# LOG_FILE = 'log/%s.log' % datetime.datetime.now().strftime('%Y-%m-%d')
+# # CRITICAL、 ERROR、WARNING、INFO、DEBUG
+# LOG_LEVEL = 'DEBUG'
+# # 所有标准输出重定向到log
+# LOG_STDOUT = True
 
 # 重试次数
 RETRY_TIMES = 20

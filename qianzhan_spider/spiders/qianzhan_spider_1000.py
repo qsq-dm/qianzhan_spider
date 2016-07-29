@@ -17,26 +17,26 @@ class QianzhanSpider(scrapy.Spider):
     def start_requests(self):
 
         txt = get_1000_txt()
-        for i in range(len(txt)):
+        for i in range(62, len(txt)):
+
             for j in range(len(txt)):
-                if i >= 62 and j >= 760:
-                    search_key = txt[i] + txt[j]
-                    # search_key = u'一三'
-                    print "++++++1000+++++++: %s %d %d %d %s" % (
-                        time.strftime('%Y-%m-%d', time.localtime(time.time())), i, j, len(txt), search_key)
-                    # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
-                    # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-                    #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
-                    # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-                    #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=1"
-                    url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
-                        search_key.encode('utf-8')) + "/?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
-                    # print url
-                    request = scrapy.Request(
-                        url,
-                        callback=self.parse
-                    )
-                    yield request
+                search_key = txt[i] + txt[j]
+                # search_key = u'一三'
+                print "++++++1000+++++++: %s %d %d %d %s" % (
+                    time.strftime('%Y-%m-%d', time.localtime(time.time())), i, j, len(txt), search_key)
+                # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
+                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+                #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
+                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+                #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=1"
+                url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
+                    search_key.encode('utf-8')) + "/?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
+                # print url
+                request = scrapy.Request(
+                    url,
+                    callback=self.parse
+                )
+                yield request
 
 
     def parse(self, response):
