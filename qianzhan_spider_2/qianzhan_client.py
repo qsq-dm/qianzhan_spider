@@ -70,7 +70,10 @@ class QianzhanClient(object):
     '''++++++++++++++++++userverify+++++++++++++++++++'''
 
     def _pre_varify(self, url):
-        response = self._http_client.get(url)
+        try:
+            response = self._http_client.get(url)
+        except Exception, e:
+            pass
         return self._get_varifyimage()
 
     def _do_verify(self, varifycode, max_times=10):
