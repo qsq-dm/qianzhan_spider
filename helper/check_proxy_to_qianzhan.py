@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     cur = proxy_db.proxy_items.find({}, {'_id': 0}).batch_size(50)
     for item in cur:
-        time.sleep(0.1)
+        time.sleep(0.3)
         logging.info("%s:%s" % (item['ip'], item['port']))
         proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
         response = session.get("http://qiye.qianzhan.com/", proxies=proxies)
