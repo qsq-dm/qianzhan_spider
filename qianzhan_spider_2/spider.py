@@ -125,9 +125,12 @@ class Spider(object):
             self._get_search(next_page_url)
 
     def _run(self):
+
         for i in range(len(self._txt)):
-            for j in range(len(self._txt)):
-                search_key = self._txt[i] + self._txt[j]
+            # for j in range(len(self._txt)):
+            if i % 2 == 0:
+                j = -1
+                search_key = self._txt[i] + self._txt[i + 1]
                 # search_key = u'在线途游(北京)科技有限公司'
                 # search_key = u'北京'
                 logging.info(
