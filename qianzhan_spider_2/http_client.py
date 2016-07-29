@@ -9,6 +9,8 @@ from config import download_delay
 import logging
 import json
 
+from mongo import ProxyDB
+
 
 class HTTPClient(object):
     def __init__(self, min_time_interval=download_delay):
@@ -19,6 +21,7 @@ class HTTPClient(object):
         self._min_time_interval = min_time_interval * 1000
         self._last_request_time = -1
 
+        self._refresh_proxy_cur()
         pass
 
     def _set_last_request_time(self):
@@ -30,18 +33,35 @@ class HTTPClient(object):
         self._last_request_time = time.time()
         pass
 
+    def _refresh_proxy_cur(self):
+        self._proxy_cur = ProxyDB.get_items()
+
+    def _set_proxy(self, **kwargs):
+        try:
+            item = self._proxy_cur.next()
+        except Exception, e:
+            self._refresh_proxy_cur()
+            self._set_proxy(**kwargs)
+            return
+        proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
+        kwargs.setdefault("proxies", proxies)
+
     def post(self, url, data=None, json=None, **kwargs):
         self._set_last_request_time()
+        self._set_proxy(**kwargs)
         logging.info("<POST %s> %s" % (url, data))
         response = self._session.post(url, data, json, **kwargs)
         logging.info("<response %d>" % response.status_code)
-        # print "response:->", response.status_code
+        if response.status_code not in (200, 302):
+            return self.post(url, data, json, **kwargs)
         return response
 
     def get(self, url, **kwargs):
         self._set_last_request_time()
+        self._set_proxy(**kwargs)
         logging.info("<GET %s>" % url)
         response = self._session.get(url, **kwargs)
         logging.info("<response %d>" % response.status_code)
-        # print "response:->", response.status_code
+        if response.status_code not in (200, 302):
+            return self.get(url, **kwargs)
         return response
