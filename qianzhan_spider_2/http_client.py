@@ -21,6 +21,7 @@ class HTTPClient(object):
         self._min_time_interval = min_time_interval * 1000
         self._last_request_time = -1
 
+        self._current_proxy_item = None
         self._refresh_proxy_cur()
         pass
 
@@ -38,12 +39,13 @@ class HTTPClient(object):
 
     def _set_proxy(self, **kwargs):
         try:
-            item = self._proxy_cur.next()
+            # self._current_proxy_item = self._proxy_cur.next()
+            self._current_proxy_item = self._proxy_cur[1]
         except Exception, e:
             self._refresh_proxy_cur()
             self._set_proxy(**kwargs)
             return
-        proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
+        proxies = {"http": "http://%s:%s" % (self._current_proxy_item['ip'], self._current_proxy_item['port'])}
         kwargs.setdefault("proxies", proxies)
 
     def post(self, url, data=None, json=None, **kwargs):
