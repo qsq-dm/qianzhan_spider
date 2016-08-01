@@ -56,6 +56,14 @@ class RedisClient(object):
 
 
 if __name__ == "__main__":
+
+    import sys
+
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+    print "sys default encoding: ", sys.getdefaultencoding()
+
+
     cur = CompanyDB.get_companys()
     for company in cur:
         print company['company_name']
