@@ -72,19 +72,19 @@ class Spider(object):
             'hdoc_area': soup.select_one('input[id="hdoc_area"]')['value']
         })
 
-        logging.debug("company:->%s" % company)
-
-        company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
-        company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
-                                                                                   company['hdoc_area'])})
-        company.update({'searchitemdftz': self._qianzhan_client.post_searchitemdftz(company['company_name'])})
-        company.update({'searchitemnbinfo': self._qianzhan_client.post_searchitemnbinfo(company['hdencryptCode'],
-                                                                                       company['hdoc_area'])})
-        if company['searchitemnbinfo'] and len(company['searchitemnbinfo']) > 0:
-            company.update(
-                {'searchitemnb': self._qianzhan_client.post_searchitemnb(company['hdencryptCode'], company['hdoc_area'],
-                                                                         company['searchitemnbinfo'][0].get('year'))})
-        company.update({'searchitemsite': self._qianzhan_client.post_searchitemsite(company['hdencryptCode'])})
+        # logging.debug("company:->%s" % company)
+        #
+        # company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
+        # company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
+        #                                                                            company['hdoc_area'])})
+        # company.update({'searchitemdftz': self._qianzhan_client.post_searchitemdftz(company['company_name'])})
+        # company.update({'searchitemnbinfo': self._qianzhan_client.post_searchitemnbinfo(company['hdencryptCode'],
+        #                                                                                company['hdoc_area'])})
+        # if company['searchitemnbinfo'] and len(company['searchitemnbinfo']) > 0:
+        #     company.update(
+        #         {'searchitemnb': self._qianzhan_client.post_searchitemnb(company['hdencryptCode'], company['hdoc_area'],
+        #                                                                  company['searchitemnbinfo'][0].get('year'))})
+        # company.update({'searchitemsite': self._qianzhan_client.post_searchitemsite(company['hdencryptCode'])})
 
         # print "company:->", company
 
@@ -126,10 +126,10 @@ class Spider(object):
 
     def _run(self):
 
-        for i in range(len(self._txt)):
-            # for j in range(len(self._txt)):
-            if i % 2 == 0:
-                j = -1
+        for i in range(62, len(self._txt)):
+            for j in range(len(self._txt)):
+                # if i % 2 == 0:
+                #     j = -1
                 search_key = self._txt[i] + self._txt[i + 1]
                 # search_key = u'在线途游(北京)科技有限公司'
                 # search_key = u'北京'
@@ -150,18 +150,18 @@ class Spider(object):
                 except Exception, e:
                     logging.exception(
                         "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (
-                        i, j, len(self._txt), search_key, e.message))
+                            i, j, len(self._txt), search_key, e.message))
                     pass
 
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")
         try:
-            is_success = self._qianzhan_client.login()
-            if is_success:
-                self._run()
-                logging.info("++++++++++++++success finish!!!++++++++")
-            else:
-                raise VerifyFailError()
+            # is_success = self._qianzhan_client.login()
+            # if is_success:
+            self._run()
+            logging.info("++++++++++++++success finish!!!++++++++")
+            # else:
+            #     raise VerifyFailError()
         except VerifyFailError, err:
             logging.error(err.message)
         except Exception, e:
