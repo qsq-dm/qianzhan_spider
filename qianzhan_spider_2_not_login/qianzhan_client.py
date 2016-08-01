@@ -110,13 +110,13 @@ class QianzhanClient(object):
             user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
             is_success = self.do_verify(user_verify_url)
             if is_success:
-                response = self._http_client.post(url, data, json, **kwargs)
+                response = self._verify_post(url, data, json, **kwargs)
             else:
-                is_success = self.login()
-                if is_success:
-                    response = self._http_client.post(url, data, json, **kwargs)
-                else:
-                    raise VerifyFailError()
+                # is_success = self.login()
+                # if is_success:
+                #     response = self._http_client.post(url, data, json, **kwargs)
+                # else:
+                raise VerifyFailError()
         return response
 
     def _verify_get(self, url, **kwargs):
@@ -127,13 +127,13 @@ class QianzhanClient(object):
             user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
             is_success = self.do_verify(user_verify_url)
             if is_success:
-                response = self._http_client.get(url, **kwargs)
+                response = self._verify_get(url, **kwargs)
             else:
-                is_success = self.login()
-                if is_success:
-                    response = self._http_client.get(url, **kwargs)
-                else:
-                    raise VerifyFailError()
+                # is_success = self.login()
+                # if is_success:
+                #     response = self._http_client.get(url, **kwargs)
+                # else:
+                raise VerifyFailError()
         return response
 
     """""+++++++++++++++hehe+++++++++++++++++++"""
