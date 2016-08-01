@@ -44,7 +44,7 @@ class ValidParamsPipeline(object):
 #             return item
 
 
-class MongoPipeline(object):
+class MongoPipeline1000(object):
     def process_item(self, item, spider):
         CompanyInfoItemsDB.upsert_company_info_item(dict(item))
         return item
