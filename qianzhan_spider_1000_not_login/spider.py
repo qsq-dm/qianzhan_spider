@@ -28,6 +28,7 @@ class Spider(object):
 
     def _get_company(self, url):
         if url in self._company_detail_url_list:
+            logging.info("had visit.....")
             return None
         else:
             self._company_detail_url_list.append(url)
@@ -106,6 +107,7 @@ class Spider(object):
                 company = self._get_company(company_url)
                 if company:
                     CompanyDB.upsert_company(company)  # upsert company
+
             except VerifyFailError, err:
                 logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
