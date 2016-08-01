@@ -194,3 +194,11 @@ class RedisClient(object):
     @staticmethod
     def get_search_url_key(url):
         return redis_client.hexists("search_url", url)
+
+    @staticmethod
+    def set_search_key_key(key):
+        redis_client.hset("search_key", key, True)
+
+    @staticmethod
+    def get_search_key_key(key):
+        return redis_client.hexists("search_key", key)
