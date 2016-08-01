@@ -12,7 +12,7 @@ from utils import get_1000_txt
 from mongo import CompanyDB
 
 from qianzhan_client import QianzhanClient
-from exception import VerifyFailError
+from exception import VerifyFailError, Error403
 
 from mredis import RedisClient
 
@@ -120,6 +120,9 @@ class Spider(object):
                 except VerifyFailError, err:
                     logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
                     raise err
+                except Error403, err:
+                    logging.exception("get_company Error403, company_name:->%s, e:->%s" % (company_name, err))
+                    raise err
                 except Exception, e:
                     logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
                     pass
@@ -164,6 +167,8 @@ class Spider(object):
                     RedisClient.set_search_key_key(search_key)
                 except VerifyFailError, err:
                     raise VerifyFailError(i, j)
+                except Error403, err:
+                    raise Error403(i, j)
                 except Exception, e:
                     logging.exception(
                         "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (
@@ -180,6 +185,8 @@ class Spider(object):
             # else:
             #     raise VerifyFailError()
         except VerifyFailError, err:
+            logging.error(err.message)
+        except Error403, err:
             logging.error(err.message)
         except Exception, e:
             logging.exception(e.message)
