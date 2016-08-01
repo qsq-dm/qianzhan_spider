@@ -37,7 +37,7 @@ redis_client = redis.StrictRedis(REDIS_HOST, REDIS_PORT, db=0)
 # redis_client.expire(ADMIN_TOKEN, 60 * 60 * 24)
 #
 #
-class RedisClient():
+class RedisClient(object):
     def __init__(self):
         pass
 
@@ -170,3 +170,19 @@ class RedisClient():
 #             return True
 #         else:
 #             return False
+
+    @staticmethod
+    def set_company_name_key(company_name):
+        redis_client.hset("company_name", company_name, True)
+
+    @staticmethod
+    def get_company_name_key(company_name):
+        return redis_client.hget("company_name", company_name)
+
+    @staticmethod
+    def set_company_url_key(url):
+        redis_client.hset("company_url", url, True)
+
+    @staticmethod
+    def get_company_url_key(url):
+        return redis_client.hget("company_url", url)

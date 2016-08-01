@@ -14,6 +14,8 @@ from mongo import CompanyDB
 from qianzhan_client import QianzhanClient
 from exception import VerifyFailError
 
+from mredis import RedisClient
+
 
 class Spider(object):
     def __init__(self, userId, password):
@@ -27,11 +29,13 @@ class Spider(object):
         pass
 
     def _get_company(self, url):
-        if url in self._company_detail_url_list:
+        # if url in self._company_detail_url_list:
+        if RedisClient.get_company_url_key(url):
             logging.info("had visit.....")
             return None
         else:
-            self._company_detail_url_list.append(url)
+            # self._company_detail_url_list.append(url)
+            RedisClient.set_company_url_key(url)
 
         response = self._qianzhan_client.get_company(url)
         # print(response.text)
@@ -102,18 +106,21 @@ class Spider(object):
             href = tag['href']
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
-            logging.info("company_name:->%s" % company_name)
-            try:
-                company = self._get_company(company_url)
-                if company:
-                    CompanyDB.upsert_company(company)  # upsert company
-
-            except VerifyFailError, err:
-                logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
-                raise err
-            except Exception, e:
-                logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
-                pass
+            if RedisClient.get_company_name_key(company_name):
+                continue
+            else:
+                logging.info("company_name:->%s" % company_name)
+                try:
+                    company = self._get_company(company_url)
+                    if company:
+                        CompanyDB.upsert_company(company)  # upsert company
+                        RedisClient.set_company_name_key(company_name)
+                except VerifyFailError, err:
+                    logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
+                    raise err
+                except Exception, e:
+                    logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
+                    pass
         try:
             next_page_href = soup.select_one('body a[class="next"]')['href']
         except Exception, e:
