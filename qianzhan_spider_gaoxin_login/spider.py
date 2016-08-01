@@ -14,16 +14,18 @@ from mongo import CompanyDB, GaoxinDB
 from qianzhan_client import QianzhanClient
 from exception import VerifyFailError
 
+from mredis import RedisClient
+
 
 class Spider(object):
     def __init__(self, userId, password):
         self._qianzhan_client = QianzhanClient(userId, password)
         self._company_detail_url_list = []
-        self._txt = get_1000_txt()
+        # self._txt = get_1000_txt()
         # self._txt_len = len(self._txt)
         # self._i = 0
         # self._j = 0
-        logging.info("txt len:->%d" % len(self._txt))
+        # logging.info("txt len:->%d" % len(self._txt))
         pass
 
     def _get_company(self, url):
@@ -107,6 +109,7 @@ class Spider(object):
                 if company:
                     CompanyDB.upsert_company_gaoxin(company)  # upsert company
             except VerifyFailError, err:
+                logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
             except Exception, e:
                 logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
