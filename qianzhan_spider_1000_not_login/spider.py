@@ -122,7 +122,7 @@ class Spider(object):
                 next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
             else:
                 next_page_url = next_page_href
-            print "next_page_url:->" + next_page_url
+            logging.debug("next_page_url:->%s" % next_page_url)
             self._get_search(next_page_url)
 
     def _run(self):
