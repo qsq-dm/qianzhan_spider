@@ -44,7 +44,7 @@ class RedisClient(object):
 
     @staticmethod
     def get_company_name_key(company_name):
-        return redis_client.hget("company_name", company_name)
+        return redis_client.hexists("company_name", company_name)
 
     @staticmethod
     def set_company_url_key(url):
