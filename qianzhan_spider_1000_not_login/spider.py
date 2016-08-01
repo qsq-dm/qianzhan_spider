@@ -96,6 +96,8 @@ class Spider(object):
         return company
 
     def _get_search(self, url):
+        if RedisClient.get_search_url_key(url):
+            return
 
         response = self._qianzhan_client.get_search(url)
 
@@ -133,6 +135,8 @@ class Spider(object):
                 next_page_url = next_page_href
             logging.debug("next_page_url:->%s" % next_page_url)
             self._get_search(next_page_url)
+
+        RedisClient.set_search_url_key(url)
 
     def _run(self):
 
