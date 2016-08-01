@@ -9,7 +9,7 @@ from urlparse import urljoin
 
 from utils import get_1000_txt
 
-from mongo import CompanyDB
+from mongo import CompanyDB, GaoxinDB
 
 from qianzhan_client import QianzhanClient
 from exception import VerifyFailError
@@ -105,53 +105,52 @@ class Spider(object):
             try:
                 company = self._get_company(company_url)
                 if company:
-                    CompanyDB.upsert_company(company)  # upsert company
+                    CompanyDB.upsert_company_gaoxin(company)  # upsert company
             except VerifyFailError, err:
                 raise err
             except Exception, e:
                 logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
                 pass
-        try:
-            next_page_href = soup.select_one('body a[class="next"]')['href']
-        except Exception, e:
-            next_page_href = None
-            pass
-        if next_page_href:
-            if next_page_href.find("http") < 0:
-                next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
-            else:
-                next_page_url = next_page_href
-            # print "next_page_url:->" + next_page_url
-            self._get_search(next_page_url)
+            break
+            # try:
+            #     next_page_href = soup.select_one('body a[class="next"]')['href']
+            # except Exception, e:
+            #     next_page_href = None
+            #     pass
+            # if next_page_href:
+            #     if next_page_href.find("http") < 0:
+            #         next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
+            #     else:
+            #         next_page_url = next_page_href
+            #     # print "next_page_url:->" + next_page_url
+            #     self._get_search(next_page_url)
 
     def _run(self):
+        # for i in range(len(self._txt)):
+        #     for j in range(len(self._txt)):
+        cur = GaoxinDB.get_items()
+        for item in cur:
+            # search_key = self._txt[i] + self._txt[j]
+            # search_key = u'在线途游(北京)科技有限公司'
+            # search_key = u'北京'
+            search_key = item['company_name']
+            logging.info("++++++crawl gaoxin:->search_key: %s" % search_key)
+            # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
+            # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+            #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
+            # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+            #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
+            url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
+                search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
 
-        for i in range(len(self._txt)):
-            # for j in range(len(self._txt)):
-            if i % 2 == 0:
-                j = -1
-                search_key = self._txt[i] + self._txt[i + 1]
-                # search_key = u'在线途游(北京)科技有限公司'
-                # search_key = u'北京'
-                logging.info(
-                    "++++++crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
-                # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
-                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-                #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
-                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-                #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
-                url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
-                    search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
-
-                try:
-                    self._get_search(url)
-                except VerifyFailError, err:
-                    raise VerifyFailError(i, j)
-                except Exception, e:
-                    logging.exception(
-                        "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (
-                            i, j, len(self._txt), search_key, e.message))
-                    pass
+            try:
+                self._get_search(url)
+            except VerifyFailError, err:
+                raise VerifyFailError()
+            except Exception, e:
+                logging.exception(
+                    "_get_search:->search_key: %s, %s" % (search_key, e.message))
+                pass
 
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")
