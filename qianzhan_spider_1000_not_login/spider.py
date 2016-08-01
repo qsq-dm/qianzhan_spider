@@ -72,7 +72,7 @@ class Spider(object):
             'hdoc_area': soup.select_one('input[id="hdoc_area"]')['value']
         })
 
-        # logging.debug("company:->%s" % company)
+        logging.debug("company:->%s" % company)
         #
         # company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
         # company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
@@ -107,6 +107,7 @@ class Spider(object):
                 if company:
                     CompanyDB.upsert_company(company)  # upsert company
             except VerifyFailError, err:
+                logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
             except Exception, e:
                 logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
@@ -121,7 +122,7 @@ class Spider(object):
                 next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
             else:
                 next_page_url = next_page_href
-            # print "next_page_url:->" + next_page_url
+            print "next_page_url:->" + next_page_url
             self._get_search(next_page_url)
 
     def _run(self):
