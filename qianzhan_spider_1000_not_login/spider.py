@@ -36,7 +36,7 @@ class Spider(object):
         soup = BeautifulSoup(response.text, 'lxml')
 
         company = {}
-        company.update({'company_name': soup.select_one('h1[class="ct_name"]').contents[0]})
+        company.update({'company_name': soup.select_one('h1[class="ct_name"]').contents[0].strip()})
         try:
             company.update({'url': soup.select_one('a[class="url"]').text})
         except Exception, e:
@@ -100,7 +100,7 @@ class Spider(object):
         link_li_list = soup.select("body ul[class='list-search'] li p[class='tit'] a")
         for tag in link_li_list:
             href = tag['href']
-            company_name = tag.text
+            company_name = tag.text.strip()
             company_url = urljoin("http://qiye.qianzhan.com/", href)
             if RedisClient.get_company_name_key(company_name):
                 continue
