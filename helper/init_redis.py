@@ -67,4 +67,4 @@ if __name__ == "__main__":
     cur = CompanyDB.get_companys()
     for company in cur:
         logging.info(company['company_name'])
-        RedisClient.set_company_name_key(company['company_name'].strip())
+        RedisClient.set_company_name_key(company['company_name'])
