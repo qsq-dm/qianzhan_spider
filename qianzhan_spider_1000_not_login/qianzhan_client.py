@@ -85,6 +85,7 @@ class QianzhanClient(object):
         check_varify_image_url = "http://qiye.qianzhan.com/usercenter/CheckVarifyImage?VerifyCode=" + varifycode
         response = self._http_client.post(check_varify_image_url)
         json_obj = response.json()
+        logging.debug("_do_verify->json_obj: %s" % json_obj)
 
         if not json_obj.get("isSuccess"):
             max_times -= 1
