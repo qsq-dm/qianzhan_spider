@@ -24,6 +24,13 @@ class QianzhanDB(object):
         logging.info("<MONGO> %s" % item)
         db.company_info_items_detail.update({'company_name': item['company_name']}, {'$set': item}, True, True)
 
+    @staticmethod
+    def is_had(company_name):
+        if db.company_info_items_detail.find({"company_name": company_name}):
+            return True
+        else:
+            return False
+
 
 class GaoxinDB(object):
     def __init__(self):

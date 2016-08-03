@@ -131,6 +131,8 @@ class Spider(object):
 
             if RedisClient.get_company_name_detail_key(search_key):
                 continue
+            if QianzhanDB.is_had(search_key):
+                continue
 
             logging.info("++++++crawl gaoxin:->search_key: %s" % search_key)
             # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
