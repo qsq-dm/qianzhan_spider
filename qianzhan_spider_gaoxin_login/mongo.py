@@ -9,7 +9,7 @@ MONGO_URI = "localhost:27017"
 # MONGO_NEEQ_DB = "neeq"
 
 mongo_client = pymongo.MongoClient(MONGO_URI)
-db = mongo_client["qianzhan"]
+db = mongo_client["qianzhan_1000"]
 
 # neeq_db = mongo_client[MONGO_NEEQ_DB]
 # ejinsui_db = mongo_client['ejinsui']
