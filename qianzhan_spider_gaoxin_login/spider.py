@@ -132,6 +132,7 @@ class Spider(object):
             if RedisClient.get_company_name_detail_key(search_key):
                 continue
             if QianzhanDB.is_had(search_key):
+                logging.debug("has")
                 continue
 
             logging.info("++++++crawl gaoxin:->search_key: %s" % search_key)

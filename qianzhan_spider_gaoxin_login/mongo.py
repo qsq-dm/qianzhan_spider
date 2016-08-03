@@ -26,7 +26,9 @@ class QianzhanDB(object):
 
     @staticmethod
     def is_had(company_name):
-        if db.company_info_items_detail.find({"company_name": company_name}):
+        cur = db.company_info_items_detail.find({"company_name": company_name})
+        logging.debug("cur:%s" % cur)
+        if cur:
             return True
         else:
             return False
