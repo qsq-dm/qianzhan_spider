@@ -31,7 +31,7 @@ class GaoxinDB(object):
 
     @staticmethod
     def get_items():
-        return gaoxin_db.company_info.find().batch_size(50).skip(8884)
+        return gaoxin_db.company_info.find().batch_size(50)
 
 
 class ProxyDB(object):
