@@ -15,7 +15,7 @@ gaoxin_db = mongo_client['gaoxin']
 proxy_db = mongo_client['proxy']
 
 
-class CompanyDB(object):
+class QianzhanDB(object):
     def __init__(self):
         pass
 

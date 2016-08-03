@@ -9,7 +9,7 @@ from urlparse import urljoin
 
 from utils import get_1000_txt
 
-from mongo import CompanyDB, GaoxinDB
+from mongo import QianzhanDB, GaoxinDB
 
 from qianzhan_client import QianzhanClient
 from exception import VerifyFailError
@@ -20,19 +20,9 @@ from mredis import RedisClient
 class Spider(object):
     def __init__(self, userId, password):
         self._qianzhan_client = QianzhanClient(userId, password)
-        self._company_detail_url_list = []
-        # self._txt = get_1000_txt()
-        # self._txt_len = len(self._txt)
-        # self._i = 0
-        # self._j = 0
-        # logging.info("txt len:->%d" % len(self._txt))
         pass
 
     def _get_company(self, url):
-        if url in self._company_detail_url_list:
-            return None
-        else:
-            self._company_detail_url_list.append(url)
 
         response = self._qianzhan_client.get_company(url)
         # print(response.text)
@@ -107,7 +97,8 @@ class Spider(object):
             try:
                 company = self._get_company(company_url)
                 if company:
-                    CompanyDB.upsert_company_gaoxin(company)  # upsert company
+                    QianzhanDB.upsert_company(company)  # upsert company
+                    RedisClient.set_company_name_base_key(company['company_name'])
             except VerifyFailError, err:
                 logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
@@ -137,6 +128,10 @@ class Spider(object):
             # search_key = u'在线途游(北京)科技有限公司'
             # search_key = u'北京'
             search_key = item['company_name']
+
+            if RedisClient.get_company_name_detail_key(search_key):
+                continue
+
             logging.info("++++++crawl gaoxin:->search_key: %s" % search_key)
             # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
             # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
