@@ -6,7 +6,7 @@ import cv2
 import numpy
 import pytesseract
 import io
-
+import cStringIO
 
 def _convert_to_jpg(gif_file):
     o_filename = 'verifyimage.jpg'
@@ -33,4 +33,4 @@ def _format_img(jpg_file):
 
 
 def read_body_to_string(body):
-    return pytesseract.image_to_string(Image.open(_format_img(_convert_to_jpg(io.BytesIO(body)))), 'eng')
+    return pytesseract.image_to_string(Image.open(_format_img(_convert_to_jpg(cStringIO.StringIO(body)))), 'eng')
