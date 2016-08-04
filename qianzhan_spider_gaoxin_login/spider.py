@@ -64,7 +64,7 @@ class Spider(object):
             'hdoc_area': soup.select_one('input[id="hdoc_area"]')['value']
         })
 
-        logging.debug("company:->%s" % company)
+        # logging.debug("company:->%s" % company)
 
         company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
         company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
