@@ -147,6 +147,7 @@ class Spider(object):
 
                 try:
                     self._get_search(url)
+                    RedisClient.set_company_name_detail_key(search_key)
                 except VerifyFailError, err:
                     raise VerifyFailError()
                 except Exception, e:
