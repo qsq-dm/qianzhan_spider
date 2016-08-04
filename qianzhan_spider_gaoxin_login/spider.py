@@ -133,25 +133,26 @@ class Spider(object):
                 continue
             if QianzhanDB.is_had(search_key):
                 logging.debug("has")
-                continue
-
-            logging.info("++++++crawl gaoxin:->search_key: %s" % search_key)
-            # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
-            # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-            #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
-            # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-            #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
-            url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
-                search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
-
-            try:
-                self._get_search(url)
-            except VerifyFailError, err:
-                raise VerifyFailError()
-            except Exception, e:
-                logging.exception(
-                    "_get_search:->search_key: %s, %s" % (search_key, e.message))
                 pass
+            else:
+
+                logging.info("++++++crawl gaoxin:->search_key: %s" % search_key)
+                # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
+                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+                #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
+                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+                #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
+                url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
+                    search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
+
+                try:
+                    self._get_search(url)
+                except VerifyFailError, err:
+                    raise VerifyFailError()
+                except Exception, e:
+                    logging.exception(
+                        "_get_search:->search_key: %s, %s" % (search_key, e.message))
+                    pass
 
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")
