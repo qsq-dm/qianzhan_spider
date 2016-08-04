@@ -94,6 +94,10 @@ class Spider(object):
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
             logging.info("company_name:->%s" % company_name)
+            if RedisClient.get_company_name_detail_key(company_name):
+                continue
+            if QianzhanDB.is_had(company_name):
+                continue
             try:
                 company = self._get_company(company_url)
                 if company:
