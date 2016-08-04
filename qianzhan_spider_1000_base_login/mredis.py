@@ -37,7 +37,7 @@ redis_client = redis.StrictRedis(REDIS_HOST, REDIS_PORT, db=0)
 # redis_client.expire(ADMIN_TOKEN, 60 * 60 * 24)
 #
 #
-class RedisClient():
+class RedisClient(object):
     def __init__(self):
         pass
 

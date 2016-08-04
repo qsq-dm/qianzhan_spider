@@ -182,6 +182,8 @@ class Spider(object):
                 raise VerifyFailError()
         except VerifyFailError, err:
             logging.error(err.message)
+        except Error403, err:
+            logging.error(err.message)
         except Exception, e:
             logging.exception(e.message)
             pass

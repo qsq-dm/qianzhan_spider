@@ -162,7 +162,7 @@ class QianzhanClient(object):
     #         dataList = None
     #         # print json_obj.get("sMsg")
     #     return dataList
-    #
+
     # def post_SearchItemCCXX(self, hdencryptCode, hdoc_area):
     #     url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
     #     form_data = {
@@ -181,7 +181,7 @@ class QianzhanClient(object):
     #         dataList = None
     #         # print json_obj.get("sMsg")
     #     return dataList
-    #
+
     # def post_searchitemdftz(self, company_name):
     #     url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
     #     form_data = {
@@ -199,7 +199,7 @@ class QianzhanClient(object):
     #         dataList = None
     #         # print json_obj.get("sMsg")
     #     return dataList
-    #
+
     # def post_searchitemnbinfo(self, hdencryptCode, hdoc_area):
     #     url = "http://qiye.qianzhan.com/orgcompany/searchitemnbinfo"
     #     form_data = {
@@ -220,7 +220,7 @@ class QianzhanClient(object):
     #         dataList = [dataList]
     #
     #     return dataList
-    #
+
     # def post_searchitemnb(self, hdencryptCode, hdoc_area, year):
     #
     #     url = "http://qiye.qianzhan.com/orgcompany/searchitemnb"
@@ -239,7 +239,7 @@ class QianzhanClient(object):
     #         dataList = None
     #         # print json_obj.get("sMsg")
     #     return dataList
-    #
+
     # def post_searchitemsite(self, hdencryptCode):
     #
     #     url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
