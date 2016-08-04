@@ -114,11 +114,11 @@ class QianzhanClient(object):
             if is_success:
                 response = self._verify_post(url, data, json, **kwargs)
             else:
-                # is_success = self.login()
-                # if is_success:
-                #     response = self._http_client.post(url, data, json, **kwargs)
-                # else:
-                raise VerifyFailError()
+                is_success = self.login()
+                if is_success:
+                    response = self._http_client.post(url, data, json, **kwargs)
+                else:
+                    raise VerifyFailError()
         elif response.status_code == 403:
             raise Error403()
         return response
@@ -133,11 +133,11 @@ class QianzhanClient(object):
             if is_success:
                 response = self._verify_get(url, **kwargs)
             else:
-                # is_success = self.login()
-                # if is_success:
-                #     response = self._http_client.get(url, **kwargs)
-                # else:
-                raise VerifyFailError()
+                is_success = self.login()
+                if is_success:
+                    response = self._http_client.get(url, **kwargs)
+                else:
+                    raise VerifyFailError()
         elif response.status_code == 403:
             raise Error403()
         return response

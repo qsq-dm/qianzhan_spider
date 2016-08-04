@@ -22,31 +22,13 @@ class QianzhanDB(object):
     @staticmethod
     def upsert_company(item):
         logging.info("<MONGO> %s" % item)
-        db.company_info_items_detail.update({'company_name': item['company_name']}, {'$set': item}, True, True)
+        db.company_info_items_base.update({'company_name': item['company_name']}, {'$set': item}, True, True)
 
     @staticmethod
     def is_had(company_name):
-        cur = db.company_info_items_detail.find_one({"company_name": company_name})
+        cur = db.company_info_items_base.find_one({"company_name": company_name})
         # logging.debug("cur:%s" % cur)
         if cur:
             return True
         else:
             return False
-
-
-class GaoxinDB(object):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def get_items():
-        return gaoxin_db.company_info.find().batch_size(50).skip(8800)
-
-
-class ProxyDB(object):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def get_items():
-        return proxy_db.proxy_items.find().batch_size(50)
