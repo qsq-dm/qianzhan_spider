@@ -9,7 +9,7 @@ from urlparse import urljoin
 
 from utils import get_1000_txt
 
-from mongo import CompanyDB
+from mongo import QianzhanDB
 
 from qianzhan_client import QianzhanClient
 from exception import VerifyFailError, Error403
@@ -110,7 +110,7 @@ class Spider(object):
             try:
                 company = self._get_company(company_url)
                 if company:
-                    CompanyDB.upsert_company(company)  # upsert company
+                    QianzhanDB.upsert_company(company)  # upsert company
                     RedisClient.set_company_name_key(company_name)
                     RedisClient.set_company_url_key(url)
             except VerifyFailError, err:

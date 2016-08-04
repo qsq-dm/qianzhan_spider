@@ -1,9 +1,7 @@
 # -*- coding:utf-8 -*-
 __author__ = 'zhaojm'
 
-import json
 import random
-import time
 import logging
 from urlparse import urljoin
 from captcha import read_body_to_string

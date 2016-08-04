@@ -7,9 +7,6 @@ import time
 from config import download_delay, default_headers
 
 import logging
-import json
-
-from mongo import ProxyDB
 
 
 class HTTPClient(object):
