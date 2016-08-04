@@ -102,17 +102,19 @@ class Spider(object):
             href = tag['href']
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
-            if RedisClient.get_company_name_key(company_name):
+            # if RedisClient.get_company_name_key(company_name):
+            #     continue
+            if QianzhanDB.is_had(company_name):
                 continue
-            if RedisClient.get_company_url_key(url):
-                continue
+            # if RedisClient.get_company_url_key(url):
+            #     continue
             logging.info("company_name:->%s" % company_name)
             try:
                 company = self._get_company(company_url)
                 if company:
                     QianzhanDB.upsert_company(company)  # upsert company
-                    RedisClient.set_company_name_key(company_name)
-                    RedisClient.set_company_url_key(url)
+                    # RedisClient.set_company_name_key(company_name)
+                    # RedisClient.set_company_url_key(url)
             except VerifyFailError, err:
                 logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
                 raise err

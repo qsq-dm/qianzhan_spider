@@ -10,9 +10,6 @@ MONGO_URI = "localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URI)
 db = mongo_client["qianzhan"]
 
-gaoxin_db = mongo_client['gaoxin']
-proxy_db = mongo_client['proxy']
-
 
 class QianzhanDB(object):
     def __init__(self):
