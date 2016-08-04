@@ -128,7 +128,7 @@ class Spider(object):
             # search_key = u'在线途游(北京)科技有限公司'
             # search_key = u'北京'
             search_key = item['company_name']
-
+            search_key = search_key.replace("（", "(").replace("）", ")")
             if RedisClient.get_company_name_detail_key(search_key):
                 continue
             if QianzhanDB.is_had(search_key):
