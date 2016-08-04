@@ -12,7 +12,9 @@ from utils import get_1000_txt
 from mongo import CompanyDB
 
 from qianzhan_client import QianzhanClient
-from exception import VerifyFailError
+from exception import VerifyFailError, Error403
+
+from mredis import RedisClient
 
 
 class Spider(object):
@@ -27,10 +29,7 @@ class Spider(object):
         pass
 
     def _get_company(self, url):
-        if url in self._company_detail_url_list:
-            return None
-        else:
-            self._company_detail_url_list.append(url)
+        # if url in self._company_detail_url_list:
 
         response = self._qianzhan_client.get_company(url)
         # print(response.text)
@@ -73,24 +72,26 @@ class Spider(object):
         })
 
         logging.debug("company:->%s" % company)
-
-        company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
-        company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
-                                                                                    company['hdoc_area'])})
-        company.update({'searchitemdftz': self._qianzhan_client.post_searchitemdftz(company['company_name'])})
-        company.update({'searchitemnbinfo': self._qianzhan_client.post_searchitemnbinfo(company['hdencryptCode'],
-                                                                                        company['hdoc_area'])})
-        if company['searchitemnbinfo'] and len(company['searchitemnbinfo']) > 0:
-            company.update(
-                {'searchitemnb': self._qianzhan_client.post_searchitemnb(company['hdencryptCode'], company['hdoc_area'],
-                                                                         company['searchitemnbinfo'][0].get('year'))})
-        company.update({'searchitemsite': self._qianzhan_client.post_searchitemsite(company['hdencryptCode'])})
+        #
+        # company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
+        # company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
+        #                                                                            company['hdoc_area'])})
+        # company.update({'searchitemdftz': self._qianzhan_client.post_searchitemdftz(company['company_name'])})
+        # company.update({'searchitemnbinfo': self._qianzhan_client.post_searchitemnbinfo(company['hdencryptCode'],
+        #                                                                                company['hdoc_area'])})
+        # if company['searchitemnbinfo'] and len(company['searchitemnbinfo']) > 0:
+        #     company.update(
+        #         {'searchitemnb': self._qianzhan_client.post_searchitemnb(company['hdencryptCode'], company['hdoc_area'],
+        #                                                                  company['searchitemnbinfo'][0].get('year'))})
+        # company.update({'searchitemsite': self._qianzhan_client.post_searchitemsite(company['hdencryptCode'])})
 
         # print "company:->", company
 
         return company
 
     def _get_search(self, url):
+        if RedisClient.get_search_url_key(url):
+            return
 
         response = self._qianzhan_client.get_search(url)
 
@@ -101,12 +102,22 @@ class Spider(object):
             href = tag['href']
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
+            if RedisClient.get_company_name_key(company_name):
+                continue
+            if RedisClient.get_company_url_key(url):
+                continue
             logging.info("company_name:->%s" % company_name)
             try:
                 company = self._get_company(company_url)
                 if company:
                     CompanyDB.upsert_company(company)  # upsert company
+                    RedisClient.set_company_name_key(company_name)
+                    RedisClient.set_company_url_key(url)
             except VerifyFailError, err:
+                logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
+                raise err
+            except Error403, err:
+                logging.exception("get_company Error403, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
             except Exception, e:
                 logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
@@ -121,18 +132,22 @@ class Spider(object):
                 next_page_url = urljoin("http://qiye.qianzhan.com/", next_page_href)
             else:
                 next_page_url = next_page_href
-            # print "next_page_url:->" + next_page_url
+            logging.debug("next_page_url:->%s" % next_page_url)
             self._get_search(next_page_url)
+
+        RedisClient.set_search_url_key(url)
 
     def _run(self):
 
-        for i in range(len(self._txt)):
-            # for j in range(len(self._txt)):
-            if i % 2 == 0:
-                j = -1
-                search_key = self._txt[i] + self._txt[i + 1]
+        for i in range(63, len(self._txt)):
+            for j in range(len(self._txt)):
+                # if i % 2 == 0:
+                #     j = i + 1
+                search_key = self._txt[i] + self._txt[j]
                 # search_key = u'在线途游(北京)科技有限公司'
                 # search_key = u'北京'
+                if RedisClient.get_search_key_key(search_key):
+                    continue
                 logging.info(
                     "++++++crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
                 # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
@@ -145,8 +160,11 @@ class Spider(object):
 
                 try:
                     self._get_search(url)
+                    RedisClient.set_search_key_key(search_key)
                 except VerifyFailError, err:
                     raise VerifyFailError(i, j)
+                except Error403, err:
+                    raise Error403(i, j)
                 except Exception, e:
                     logging.exception(
                         "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (

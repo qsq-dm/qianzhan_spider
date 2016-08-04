@@ -9,7 +9,7 @@ from urlparse import urljoin
 from captcha import read_body_to_string
 from http_client import HTTPClient
 
-from exception import VerifyFailError
+from exception import VerifyFailError, Error403
 
 
 class QianzhanClient(object):
@@ -85,6 +85,7 @@ class QianzhanClient(object):
         check_varify_image_url = "http://qiye.qianzhan.com/usercenter/CheckVarifyImage?VerifyCode=" + varifycode
         response = self._http_client.post(check_varify_image_url)
         json_obj = response.json()
+        logging.debug("_do_verify->json_obj: %s" % json_obj)
 
         if not json_obj.get("isSuccess"):
             max_times -= 1
@@ -118,6 +119,8 @@ class QianzhanClient(object):
                 #     response = self._http_client.post(url, data, json, **kwargs)
                 # else:
                 raise VerifyFailError()
+        elif response.status_code == 403:
+            raise Error403()
         return response
 
     def _verify_get(self, url, **kwargs):
@@ -135,125 +138,127 @@ class QianzhanClient(object):
                 #     response = self._http_client.get(url, **kwargs)
                 # else:
                 raise VerifyFailError()
+        elif response.status_code == 403:
+            raise Error403()
         return response
 
     """""+++++++++++++++hehe+++++++++++++++++++"""
 
-    def post_getcommentlist(self, hdencryptCode):
-        url = "http://qiye.qianzhan.com/orgcompany/getcommentlist"
-        form_data = {
-            'orgCode': hdencryptCode,
-            'page': '1',
-            'pagesize': '5'
-        }
-        response = self._verify_post(url, form_data)
-        json_obj = response.json()
-        # logging.debug("sMsg: %s" % json_obj.get("sMsg"))
-        # logging.debug("getcommentlist:->%s" % json_obj)
-
-        if json_obj.get("isSuccess"):
-            dataList = json_obj.get('dataList')
-        else:
-            dataList = None
-            # print json_obj.get("sMsg")
-        return dataList
-
-    def post_SearchItemCCXX(self, hdencryptCode, hdoc_area):
-        url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
-        form_data = {
-            'orgCode': hdencryptCode,
-            'oc_area': hdoc_area
-        }
-        response = self._verify_post(url, form_data)
-
-        json_obj = response.json()
-        # logging.debug("sMsg: %s" % json_obj.get("sMsg"))
-        # print "SearchItemCCXX:->", json_obj
-
-        if json_obj.get("isSuccess"):
-            dataList = json_obj.get('dataList')
-        else:
-            dataList = None
-            # print json_obj.get("sMsg")
-        return dataList
-
-    def post_searchitemdftz(self, company_name):
-        url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
-        form_data = {
-            'orgName': company_name,
-            'page': '1',
-            'pagesize': '10'
-        }
-        response = self._verify_post(url, form_data)
-        json_obj = response.json()
-        # print "searchitemdftz:->", json_obj
-
-        if json_obj.get("isSuccess"):
-            dataList = json_obj.get('dataList')
-        else:
-            dataList = None
-            # print json_obj.get("sMsg")
-        return dataList
-
-    def post_searchitemnbinfo(self, hdencryptCode, hdoc_area):
-        url = "http://qiye.qianzhan.com/orgcompany/searchitemnbinfo"
-        form_data = {
-            'orgCode': hdencryptCode,
-            'areaCode': hdoc_area
-        }
-        response = self._verify_post(url, form_data)
-        json_obj = response.json()
-        # print "searchitemnbinfo:->", json_obj
-
-        if json_obj.get("isSuccess"):
-            dataList = json_obj.get('dataList')
-        else:
-            dataList = None
-            # print json_obj.get("sMsg")
-
-        if isinstance(dataList, dict):
-            dataList = [dataList]
-
-        return dataList
-
-    def post_searchitemnb(self, hdencryptCode, hdoc_area, year):
-
-        url = "http://qiye.qianzhan.com/orgcompany/searchitemnb"
-        form_data = {
-            'orgCode': hdencryptCode,
-            'areaCode': hdoc_area,
-            'year': str(year),
-        }
-        response = self._verify_post(url, form_data)
-        json_obj = response.json()
-        # print "searchitemnb:->", json_obj
-
-        if json_obj.get("isSuccess"):
-            dataList = json_obj.get('dataList')
-        else:
-            dataList = None
-            # print json_obj.get("sMsg")
-        return dataList
-
-    def post_searchitemsite(self, hdencryptCode):
-
-        url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
-        form_data = {
-            'orgCode': hdencryptCode,
-            'page': '1',
-            'pagesize': '10'
-        }
-        response = self._verify_post(url, form_data)
-
-        json_obj = response.json()
-        # print "searchitemsite:->", json_obj
-
-        if json_obj.get("isSuccess"):
-            dataList = json_obj.get('dataList')
-        else:
-            dataList = None
-            # print json_obj.get("sMsg")
-        return dataList
+    # def post_getcommentlist(self, hdencryptCode):
+    #     url = "http://qiye.qianzhan.com/orgcompany/getcommentlist"
+    #     form_data = {
+    #         'orgCode': hdencryptCode,
+    #         'page': '1',
+    #         'pagesize': '5'
+    #     }
+    #     response = self._verify_post(url, form_data)
+    #     json_obj = response.json()
+    #     # logging.debug("sMsg: %s" % json_obj.get("sMsg"))
+    #     # logging.debug("getcommentlist:->%s" % json_obj)
+    #
+    #     if json_obj.get("isSuccess"):
+    #         dataList = json_obj.get('dataList')
+    #     else:
+    #         dataList = None
+    #         # print json_obj.get("sMsg")
+    #     return dataList
+    #
+    # def post_SearchItemCCXX(self, hdencryptCode, hdoc_area):
+    #     url = "http://qiye.qianzhan.com/orgcompany/SearchItemCCXX"
+    #     form_data = {
+    #         'orgCode': hdencryptCode,
+    #         'oc_area': hdoc_area
+    #     }
+    #     response = self._verify_post(url, form_data)
+    #
+    #     json_obj = response.json()
+    #     # logging.debug("sMsg: %s" % json_obj.get("sMsg"))
+    #     # print "SearchItemCCXX:->", json_obj
+    #
+    #     if json_obj.get("isSuccess"):
+    #         dataList = json_obj.get('dataList')
+    #     else:
+    #         dataList = None
+    #         # print json_obj.get("sMsg")
+    #     return dataList
+    #
+    # def post_searchitemdftz(self, company_name):
+    #     url = "http://qiye.qianzhan.com/orgcompany/searchitemdftz"
+    #     form_data = {
+    #         'orgName': company_name,
+    #         'page': '1',
+    #         'pagesize': '10'
+    #     }
+    #     response = self._verify_post(url, form_data)
+    #     json_obj = response.json()
+    #     # print "searchitemdftz:->", json_obj
+    #
+    #     if json_obj.get("isSuccess"):
+    #         dataList = json_obj.get('dataList')
+    #     else:
+    #         dataList = None
+    #         # print json_obj.get("sMsg")
+    #     return dataList
+    #
+    # def post_searchitemnbinfo(self, hdencryptCode, hdoc_area):
+    #     url = "http://qiye.qianzhan.com/orgcompany/searchitemnbinfo"
+    #     form_data = {
+    #         'orgCode': hdencryptCode,
+    #         'areaCode': hdoc_area
+    #     }
+    #     response = self._verify_post(url, form_data)
+    #     json_obj = response.json()
+    #     # print "searchitemnbinfo:->", json_obj
+    #
+    #     if json_obj.get("isSuccess"):
+    #         dataList = json_obj.get('dataList')
+    #     else:
+    #         dataList = None
+    #         # print json_obj.get("sMsg")
+    #
+    #     if isinstance(dataList, dict):
+    #         dataList = [dataList]
+    #
+    #     return dataList
+    #
+    # def post_searchitemnb(self, hdencryptCode, hdoc_area, year):
+    #
+    #     url = "http://qiye.qianzhan.com/orgcompany/searchitemnb"
+    #     form_data = {
+    #         'orgCode': hdencryptCode,
+    #         'areaCode': hdoc_area,
+    #         'year': str(year),
+    #     }
+    #     response = self._verify_post(url, form_data)
+    #     json_obj = response.json()
+    #     # print "searchitemnb:->", json_obj
+    #
+    #     if json_obj.get("isSuccess"):
+    #         dataList = json_obj.get('dataList')
+    #     else:
+    #         dataList = None
+    #         # print json_obj.get("sMsg")
+    #     return dataList
+    #
+    # def post_searchitemsite(self, hdencryptCode):
+    #
+    #     url = "http://qiye.qianzhan.com/orgcompany/searchitemsite"
+    #     form_data = {
+    #         'orgCode': hdencryptCode,
+    #         'page': '1',
+    #         'pagesize': '10'
+    #     }
+    #     response = self._verify_post(url, form_data)
+    #
+    #     json_obj = response.json()
+    #     # print "searchitemsite:->", json_obj
+    #
+    #     if json_obj.get("isSuccess"):
+    #         dataList = json_obj.get('dataList')
+    #     else:
+    #         dataList = None
+    #         # print json_obj.get("sMsg")
+    #     return dataList
 
     def get_company(self, url):
         response = self._verify_get(url)
