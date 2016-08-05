@@ -42,20 +42,22 @@ if __name__ == "__main__":
         filemode='w'
     )
 
-    cur = proxy_db.proxy_items_qianzhan.find({}, {'_id': 0}).batch_size(50)
+    cur = proxy_db.proxy_items_qianzhan_2.find({}, {'_id': 0}).batch_size(50)
     for item in cur:
         time.sleep(0.3)
         logging.info("%s:%s" % (item['ip'], item['port']))
         proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
         try:
-            response = session.get("http://qiye.qianzhan.com/", proxies=proxies, timeout=1, allow_redirects=False)
+            response = session.get(
+                "http://qiye.qianzhan.com/search/all/%E4%B8%80%E4%B8%89?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1",
+                proxies=proxies, timeout=1, allow_redirects=False)
             logging.info("<response %d>" % response.status_code)
             if response.status_code == 200:
-                proxy_db.proxy_items_qianzhan_2.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+                proxy_db.proxy_items_qianzhan_3.update({"ip": item['ip'], "port": item['port']}, item, True, True)
             else:
                 proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
         except Exception, e:
             logging.exception(e)
             proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
-        proxy_db.proxy_items_qianzhan.remove({"ip": item['ip'], "port": item['port']})
+        proxy_db.proxy_items_qianzhan_2.remove({"ip": item['ip'], "port": item['port']})
         proxy_db.proxy_items_all.update({"ip": item['ip'], "port": item['port']}, item, True, True)
