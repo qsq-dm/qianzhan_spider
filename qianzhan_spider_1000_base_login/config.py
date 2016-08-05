@@ -4,7 +4,7 @@ __author__ = 'zhaojm'
 userId = "17057295997"
 password = "123456"
 
-download_delay = 0.2
+download_delay = 0.1
 
 default_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
