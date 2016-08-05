@@ -13,7 +13,7 @@ print "sys default encoding: ", sys.getdefaultencoding()
 
 
 def main():
-    init_logging()
+    init_logging("log/log1.log", "log/myspider1.log")
     spider = Spider(userId, password)
     spider.run()
     pass
