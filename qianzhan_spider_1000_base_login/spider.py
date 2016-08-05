@@ -157,7 +157,7 @@ class Spider(object):
             #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
             # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
             #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
-            url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
+            url = "http://qiye.qianzhan.com/search/all/" + urllib.quote(
                 search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
 
             try:
