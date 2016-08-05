@@ -16,7 +16,7 @@ class HTTPClient(object):
         self._min_time_interval = min_time_interval * 1000
         self._last_request_time = -1
 
-        # self._current_proxies = None
+        self._current_proxies = {"http": "http://120.132.71.212:80"}
         # self._refresh_proxy_cur()
         # self._refresh_proxy()
         pass
@@ -50,8 +50,7 @@ class HTTPClient(object):
         # kwargs.setdefault("proxies", {"HTTP": "http://111.202.158.1:80"})
         logging.info("<POST %s> %s" % (url, data))
         # try:
-        response = self._session.post(url, data=data, json=json, proxies={"HTTP": "http://111.202.158.1:80"},
-                                      allow_redirects=False)
+        response = self._session.post(url, data=data, json=json, proxies=self._current_proxies, allow_redirects=False)
         logging.info("<response %d>" % response.status_code)
         # if response.status_code not in (200, 302):
         #     # self._refresh_proxy()
@@ -71,7 +70,7 @@ class HTTPClient(object):
         # kwargs.setdefault("proxies", {"HTTP": "http://111.202.158.1:80"})
         logging.info("<GET %s>" % url)
         # try:
-        response = self._session.get(url, proxies={"HTTP": "http://111.202.158.1:80"}, allow_redirects=False)
+        response = self._session.get(url, proxies=self._current_proxies, allow_redirects=False)
         logging.info("<response %d>" % response.status_code)
         # if response.status_code not in (200, 302):
         #     self._refresh_proxy()
