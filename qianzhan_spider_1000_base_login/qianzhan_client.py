@@ -102,38 +102,38 @@ class QianzhanClient(object):
 
     """+++++++++++verify post get++++++++"""
 
-    def _verify_post(self, url, data=None, json=None, **kwargs):
-        kwargs.setdefault("allow_redirects", False)
-        response = self._http_client.post(url, data, json, **kwargs)
+    def _verify_post(self, url, data=None, json=None):
+        # kwargs.setdefault("allow_redirects", False)
+        response = self._http_client.post(url, data, json)
         if response.status_code == 302:
             location = response.headers['Location']
             user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
             is_success = self.do_verify(user_verify_url)
             if is_success:
-                response = self._verify_post(url, data, json, **kwargs)
+                response = self._verify_post(url, data, json)
             else:
                 is_success = self.login()
                 if is_success:
-                    response = self._http_client.post(url, data, json, **kwargs)
+                    response = self._http_client.post(url, data, json)
                 else:
                     raise VerifyFailError()
         elif response.status_code == 403:
             raise Error403()
         return response
 
-    def _verify_get(self, url, **kwargs):
-        kwargs.setdefault("allow_redirects", False)
-        response = self._http_client.get(url, **kwargs)
+    def _verify_get(self, url):
+        # kwargs.setdefault("allow_redirects", False)
+        response = self._http_client.get(url)
         if response.status_code == 302:
             location = response.headers['Location']
             user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
             is_success = self.do_verify(user_verify_url)
             if is_success:
-                response = self._verify_get(url, **kwargs)
+                response = self._verify_get(url)
             else:
                 is_success = self.login()
                 if is_success:
-                    response = self._http_client.get(url, **kwargs)
+                    response = self._http_client.get(url)
                 else:
                     raise VerifyFailError()
         elif response.status_code == 403:
