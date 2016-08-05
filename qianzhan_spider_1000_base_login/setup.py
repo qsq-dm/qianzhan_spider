@@ -15,7 +15,7 @@ print "sys default encoding: ", sys.getdefaultencoding()
 
 
 def main():
-    init_logging("log/log1.log", "log/myspider1.log")
+    init_logging("log/log.log", "log/myspider.log")
     spider = Spider(userId, password)
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     spider.run()
