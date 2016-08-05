@@ -143,35 +143,35 @@ class Spider(object):
 
         for i in range(77, len(self._txt)):
             # for j in range(len(self._txt)):
-            if i % 2 == 0:
-                j = i + 1
-                search_key = self._txt[i] + self._txt[j]
-                # search_key = u'在线途游(北京)科技有限公司'
-                # search_key = u'北京'
-                if RedisClient.get_search_key_key(search_key):
-                    continue
-                logging.info(
-                    "++++++crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
-                # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
-                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-                #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
-                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-                #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
-                url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
-                    search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
+            # if i % 2 == 0:
+            j = i + 2
+            search_key = self._txt[i] + self._txt[j]
+            # search_key = u'在线途游(北京)科技有限公司'
+            # search_key = u'北京'
+            if RedisClient.get_search_key_key(search_key):
+                continue
+            logging.info(
+                "++++++crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
+            # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
+            # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+            #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
+            # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+            #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
+            url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
+                search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
 
-                try:
-                    self._get_search(url)
-                    RedisClient.set_search_key_key(search_key)
-                except VerifyFailError, err:
-                    raise VerifyFailError(i, j)
-                except Error403, err:
-                    raise Error403(i, j)
-                except Exception, e:
-                    logging.exception(
-                        "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (
-                            i, j, len(self._txt), search_key, e.message))
-                    pass
+            try:
+                self._get_search(url)
+                RedisClient.set_search_key_key(search_key)
+            except VerifyFailError, err:
+                raise VerifyFailError(i, j)
+            except Error403, err:
+                raise Error403(i, j)
+            except Exception, e:
+                logging.exception(
+                    "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (
+                        i, j, len(self._txt), search_key, e.message))
+                pass
 
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")
