@@ -47,10 +47,10 @@ class HTTPClient(object):
         self._set_last_request_time()
         # kwargs.update({"proxies", self._current_proxies})
         # kwargs.update({"timeout", 2})
-        kwargs.setdefault("proxies", {"HTTP": "http://111.202.158.1:80"})
+        # kwargs.setdefault("proxies", {"HTTP": "http://111.202.158.1:80"})
         logging.info("<POST %s> %s %s" % (url, data, kwargs))
         # try:
-        response = self._session.post(url, data, json, **kwargs)
+        response = self._session.post(url, data=data, json=json, proxies={"HTTP": "http://111.202.158.1:80"}, **kwargs)
         logging.info("<response %d>" % response.status_code)
         # if response.status_code not in (200, 302):
         #     # self._refresh_proxy()
@@ -67,10 +67,10 @@ class HTTPClient(object):
 
         # kwargs.update({"proxies", self._current_proxies})
         # kwargs.update({"timeout", 2})
-        kwargs.setdefault("proxies", {"HTTP": "http://111.202.158.1:80"})
+        # kwargs.setdefault("proxies", {"HTTP": "http://111.202.158.1:80"})
         logging.info("<GET %s %s>" % (url, kwargs))
         # try:
-        response = self._session.get(url, **kwargs)
+        response = self._session.get(url, proxies={"HTTP": "http://111.202.158.1:80"}, **kwargs)
         logging.info("<response %d>" % response.status_code)
         # if response.status_code not in (200, 302):
         #     self._refresh_proxy()
