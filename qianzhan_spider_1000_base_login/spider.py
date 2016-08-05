@@ -144,7 +144,7 @@ class Spider(object):
         for i in range(77, len(self._txt)):
             # for j in range(i, len(self._txt)):
             # if i % 2 == 0:
-            j = i + 3
+            j = i + 5
             search_key = self._txt[i] + self._txt[j]
             # search_key = u'在线途游(北京)科技有限公司'
             # search_key = u'北京'
