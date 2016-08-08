@@ -4,7 +4,7 @@ __author__ = 'zhaojm'
 import requests
 import time
 
-from config import download_delay, default_headers
+from config import download_delay, default_headers, proxies
 
 import logging
 
@@ -16,7 +16,7 @@ class HTTPClient(object):
         self._min_time_interval = min_time_interval * 1000
         self._last_request_time = -1
 
-        self._current_proxies = {"http": "http://111.13.136.36:80"}
+        self._current_proxies = {"http": proxies}
         # self._refresh_proxy_cur()
         # self._refresh_proxy()
         pass
