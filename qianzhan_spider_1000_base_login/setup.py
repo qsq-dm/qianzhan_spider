@@ -20,7 +20,7 @@ def main():
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     spider.run()
     end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    logging.log("begin: %s, end: %s" % (begin_time, end_time))
+    logging.info("begin: %s, end: %s" % (begin_time, end_time))
     pass
 
 
