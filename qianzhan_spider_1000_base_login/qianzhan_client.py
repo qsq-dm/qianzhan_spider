@@ -130,7 +130,9 @@ class QianzhanClient(object):
     def _verify_get(self, url):
         # kwargs.setdefault("allow_redirects", False)
         response = self._http_client.get(url)
-        if response.status_code == 302:
+        if response.status_code == 200:
+            pass
+        elif response.status_code == 302:
             location = response.headers['Location']
             user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
             is_success = self.do_verify(user_verify_url)
@@ -146,6 +148,8 @@ class QianzhanClient(object):
             raise Error403()
         elif response.status_code == 404:
             raise Error404()
+        else:
+            raise ErrorStatusCode()
         return response
 
     """""+++++++++++++++hehe+++++++++++++++++++"""
