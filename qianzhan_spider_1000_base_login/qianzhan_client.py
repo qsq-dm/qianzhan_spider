@@ -7,7 +7,7 @@ from urlparse import urljoin
 from captcha import read_body_to_string
 from http_client import HTTPClient
 
-from exception import VerifyFailError, Error403
+from exception import VerifyFailError, Error403, Error404, ErrorStatusCode
 
 
 class QianzhanClient(object):
@@ -105,7 +105,9 @@ class QianzhanClient(object):
     def _verify_post(self, url, data=None, json=None):
         # kwargs.setdefault("allow_redirects", False)
         response = self._http_client.post(url, data, json)
-        if response.status_code == 302:
+        if response.status_code == 200:
+            pass
+        elif response.status_code == 302:
             location = response.headers['Location']
             user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
             is_success = self.do_verify(user_verify_url)
@@ -119,6 +121,10 @@ class QianzhanClient(object):
                     raise VerifyFailError()
         elif response.status_code == 403:
             raise Error403()
+        elif response.status_code == 404:
+            raise Error404()
+        else:
+            raise ErrorStatusCode()
         return response
 
     def _verify_get(self, url):
@@ -138,6 +144,8 @@ class QianzhanClient(object):
                     raise VerifyFailError()
         elif response.status_code == 403:
             raise Error403()
+        elif response.status_code == 404:
+            raise Error404()
         return response
 
     """""+++++++++++++++hehe+++++++++++++++++++"""
