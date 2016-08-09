@@ -6,6 +6,9 @@ import logging
 from urlparse import urljoin
 from captcha import read_body_to_string
 from http_client import HTTPClient
+import StringIO
+import gzip
+import json
 
 from exception import VerifyFailError, Error403, Error404, ErrorStatusCode
 
@@ -44,9 +47,19 @@ class QianzhanClient(object):
         }
         login_url = "http://qiye.qianzhan.com/usercenter/dologin"
         response = self._http_client.post(login_url, form_data)
-        json_obj = response.json()
+        logging.debug("text: %s" % response.text)
 
-        logging.debug("sMsg: %s" % json_obj.get("sMsg"))
+        isGzip = response.headers.get('Content-Encoding')
+        print isGzip
+        if isGzip:
+            compressedstream = StringIO.StringIO(response.text)
+            gzipper = gzip.GzipFile(fileobj=compressedstream)
+            data = gzipper.read()
+            json_obj = json.loads(data)
+        else:
+            json_obj = response.json()
+
+        logging.debug("json_obj: %s" % json_obj)
 
         if not json_obj.get("isSuccess"):
             # print json_obj.get("sMsg")
