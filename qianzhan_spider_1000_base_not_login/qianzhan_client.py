@@ -9,7 +9,7 @@ from urlparse import urljoin
 from captcha import read_body_to_string
 from http_client import HTTPClient
 
-from exception import VerifyFailError, Error403
+from exception import Error302, Error403
 
 
 class QianzhanClient(object):
@@ -118,7 +118,7 @@ class QianzhanClient(object):
                 # if is_success:
                 #     response = self._http_client.post(url, data, json, **kwargs)
                 # else:
-                raise VerifyFailError()
+                raise Error302()
         elif response.status_code == 403:
             raise Error403()
         return response
@@ -137,7 +137,7 @@ class QianzhanClient(object):
                 # if is_success:
                 #     response = self._http_client.get(url, **kwargs)
                 # else:
-                raise VerifyFailError()
+                raise Error302()
         elif response.status_code == 403:
             raise Error403()
         return response

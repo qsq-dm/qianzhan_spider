@@ -10,7 +10,7 @@ import StringIO
 import gzip
 import json
 
-from exception import VerifyFailError, Error403, Error404, ErrorStatusCode
+from exception import Error302, Error403, Error404, ErrorStatusCode
 
 
 class QianzhanClient(object):
@@ -127,11 +127,15 @@ class QianzhanClient(object):
                 if is_success:
                     response = self._http_client.post(url, data, json)
                 else:
-                    raise VerifyFailError()
+                    raise Error302()
         elif response.status_code == 403:
             raise Error403()
         elif response.status_code == 404:
-            raise Error404()
+            is_success = self.login()
+            if is_success:
+                response = self._http_client.post(url, data, json)
+            else:
+                raise Error404()
         else:
             raise ErrorStatusCode()
         return response
@@ -152,7 +156,7 @@ class QianzhanClient(object):
                 if is_success:
                     response = self._http_client.get(url)
                 else:
-                    raise VerifyFailError()
+                    raise Error302()
         elif response.status_code == 403:
             raise Error403()
         elif response.status_code == 404:

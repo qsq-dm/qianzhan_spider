@@ -12,7 +12,7 @@ from utils import get_1000_txt
 from mongo import CompanyDB
 
 from qianzhan_client import QianzhanClient
-from exception import VerifyFailError, Error403
+from exception import Error302, Error403
 
 from mredis import RedisClient
 
@@ -113,8 +113,8 @@ class Spider(object):
                     CompanyDB.upsert_company(company)  # upsert company
                     RedisClient.set_company_name_key(company_name)
                     RedisClient.set_company_url_key(url)
-            except VerifyFailError, err:
-                logging.exception("get_company VerifyFailError, company_name:->%s, e:->%s" % (company_name, err))
+            except Error302, err:
+                logging.exception("get_company Error302, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
             except Error403, err:
                 logging.exception("get_company Error403, company_name:->%s, e:->%s" % (company_name, err))
@@ -161,8 +161,8 @@ class Spider(object):
                 try:
                     self._get_search(url)
                     RedisClient.set_search_key_key(search_key)
-                except VerifyFailError, err:
-                    raise VerifyFailError(i, j)
+                except Error302, err:
+                    raise Error302(i, j)
                 except Error403, err:
                     raise Error403(i, j)
                 except Exception, e:
@@ -179,8 +179,8 @@ class Spider(object):
             self._run()
             logging.info("++++++++++++++success finish!!!++++++++")
             # else:
-            #     raise VerifyFailError()
-        except VerifyFailError, err:
+            #     raise Error302()
+        except Error302, err:
             logging.error(err.message)
         except Error403, err:
             logging.error(err.message)
