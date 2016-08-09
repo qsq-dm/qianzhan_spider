@@ -49,7 +49,7 @@ if __name__ == "__main__":
         proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
         try:
             response = session.get(
-                "http://qiye.qianzhan.com/search/all/%E4%B8%80%E4%B8%89?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1",
+                "http://qiye.qianzhan.com/search/all/%E5%8C%97%E4%BA%AC?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1",
                 proxies=proxies, timeout=1, allow_redirects=False)
             logging.info("<response %d>" % response.status_code)
             if response.status_code == 200:
