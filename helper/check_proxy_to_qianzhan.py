@@ -42,7 +42,7 @@ if __name__ == "__main__":
         filemode='w'
     )
 
-    cur = proxy_db.proxy_items_qianzhan_all.find({}, {'_id': 0}).batch_size(50)
+    cur = proxy_db.proxy_items_all.find({}, {'_id': 0}).batch_size(50)
     for item in cur:
         time.sleep(0.4)
         logging.info("%s:%s" % (item['ip'], item['port']))
