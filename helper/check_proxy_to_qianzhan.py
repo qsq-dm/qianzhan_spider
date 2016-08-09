@@ -53,7 +53,7 @@ if __name__ == "__main__":
                 proxies=proxies, timeout=1, allow_redirects=False)
             logging.info("<response %d>" % response.status_code)
             if response.status_code == 200 and response.text.find("企业查询宝") > 0:
-                proxy_db.proxy_items_qianzhan_6.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+                proxy_db.proxy_items_qianzhan.update({"ip": item['ip'], "port": item['port']}, item, True, True)
             else:
                 proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
         except Exception, e:
