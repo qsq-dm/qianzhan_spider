@@ -52,7 +52,7 @@ if __name__ == "__main__":
                 "http://qiye.qianzhan.com/search/all/%E5%8C%97%E4%BA%AC?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1",
                 proxies=proxies, timeout=1, allow_redirects=False)
             logging.info("<response %d>" % response.status_code)
-            if response.status_code == 200 and response.text.find("企业查询宝") > 0:
+            if response.status_code == 200 and response.text.find(u"企业查询宝") > 0:
                 proxy_db.proxy_items_qianzhan.update({"ip": item['ip'], "port": item['port']}, item, True, True)
             else:
                 proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
