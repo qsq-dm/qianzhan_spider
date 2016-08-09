@@ -160,7 +160,11 @@ class QianzhanClient(object):
         elif response.status_code == 403:
             raise Error403()
         elif response.status_code == 404:
-            raise Error404()
+            is_success = self.login()
+            if is_success:
+                response = self._http_client.get(url)
+            else:
+                raise Error404()
         else:
             raise ErrorStatusCode()
         return response
