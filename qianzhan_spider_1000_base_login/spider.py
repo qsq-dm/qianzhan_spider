@@ -141,7 +141,7 @@ class Spider(object):
 
     def _run(self):
 
-        for i in range(109, len(self._txt)):
+        for i in range(110, len(self._txt)):
             for j in range(i, len(self._txt)):
                 # if i % 2 == 0:
                 # j = i + 5
