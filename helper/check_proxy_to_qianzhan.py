@@ -42,7 +42,7 @@ if __name__ == "__main__":
         filemode='w'
     )
 
-    cur = proxy_db.proxy_items_qianzhan_2.find({}, {'_id': 0}).batch_size(50)
+    cur = proxy_db.proxy_items_qianzhan_3.find({}, {'_id': 0}).batch_size(50)
     for item in cur:
         time.sleep(0.3)
         logging.info("%s:%s" % (item['ip'], item['port']))
@@ -53,11 +53,11 @@ if __name__ == "__main__":
                 proxies=proxies, timeout=1, allow_redirects=False)
             logging.info("<response %d>" % response.status_code)
             if response.status_code == 200:
-                proxy_db.proxy_items_qianzhan_3.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+                proxy_db.proxy_items_qianzhan_4.update({"ip": item['ip'], "port": item['port']}, item, True, True)
             else:
                 proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
         except Exception, e:
             logging.exception(e)
             proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
-        proxy_db.proxy_items_qianzhan_2.remove({"ip": item['ip'], "port": item['port']})
+        proxy_db.proxy_items_qianzhan_3.remove({"ip": item['ip'], "port": item['port']})
         proxy_db.proxy_items_all.update({"ip": item['ip'], "port": item['port']}, item, True, True)
