@@ -49,15 +49,15 @@ class QianzhanClient(object):
         response = self._http_client.post(login_url, form_data)
         logging.debug("text: %s" % response.text)
 
-        isGzip = response.headers.get('Content-Encoding')
-        print isGzip
-        if isGzip:
-            compressedstream = StringIO.StringIO(response.text)
-            gzipper = gzip.GzipFile(fileobj=compressedstream)
-            data = gzipper.read()
-            json_obj = json.loads(data)
-        else:
-            json_obj = response.json()
+        # isGzip = response.headers.get('Content-Encoding')
+        # print isGzip
+        # if isGzip:
+        #     compressedstream = StringIO.StringIO(response.text)
+        #     gzipper = gzip.GzipFile(fileobj=compressedstream)
+        #     data = gzipper.read()
+        json_obj = json.loads(response.text)
+        # else:
+        # json_obj = response.json()
 
         logging.debug("json_obj: %s" % json_obj)
 
