@@ -34,7 +34,7 @@ class QianzhanClient(object):
             varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage?" + str(random.random())
 
         response = self._http_client.get(varifyimage_url)
-        logging.debug("verifyimage: %s" % response.content)
+        # logging.debug("verifyimage: %s" % response.content)
         varifycode = read_body_to_string(response.content)
         logging.debug("varifycode: %s" % varifycode.replace(' ', ''))
         return varifycode.replace(' ', '')
