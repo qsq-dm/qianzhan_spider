@@ -4,7 +4,7 @@ __author__ = 'zhaojm'
 userId = "17057295997"
 password = "123456"
 
-download_delay = 0.5
+download_delay = 0.0
 
 default_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -19,3 +19,11 @@ default_headers = {
     'Upgrade-Insecure-Requests': 1,
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
 }
+
+# proxies = "http://120.131.128.211:80"
+# proxies = "http://106.75.128.90:80"
+# proxies = "http://106.75.128.89:80"
+# proxies = "http://120.52.73.199:80"
+# proxies = "http://121.193.143.249:80"
+# proxies = "http://124.133.230.254:80"
+proxies = "http://223.67.136.218:80"

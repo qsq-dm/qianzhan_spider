@@ -4,12 +4,9 @@ __author__ = 'zhaojm'
 import requests
 import time
 
-from config import download_delay, default_headers
+from config import download_delay, default_headers, proxies
 
 import logging
-import json
-
-from mongo import ProxyDB
 
 
 class HTTPClient(object):
@@ -19,7 +16,7 @@ class HTTPClient(object):
         self._min_time_interval = min_time_interval * 1000
         self._last_request_time = -1
 
-        # self._current_proxies = None
+        self._current_proxies = {"http": proxies}
         # self._refresh_proxy_cur()
         # self._refresh_proxy()
         pass
@@ -46,13 +43,12 @@ class HTTPClient(object):
     #         self._refresh_proxy_cur()
     #         self._refresh_proxy()
 
-    def post(self, url, data=None, json=None, **kwargs):
+    def post(self, url, data=None, json=None):
         self._set_last_request_time()
-        # kwargs.update({"proxies", self._current_proxies})
-        # kwargs.update({"timeout", 2})
-        logging.info("<POST %s> %s %s" % (url, data, kwargs))
+
+        logging.info("<POST %s> %s" % (url, data))
         # try:
-        response = self._session.post(url, data, json, **kwargs)
+        response = self._session.post(url, data=data, json=json, proxies=self._current_proxies, allow_redirects=False)
         logging.info("<response %d>" % response.status_code)
         # if response.status_code not in (200, 302):
         #     # self._refresh_proxy()
@@ -63,15 +59,12 @@ class HTTPClient(object):
 
         return response
 
-    def get(self, url, **kwargs):
+    def get(self, url):
         self._set_last_request_time()
-        # logging.info("kwargs: %s, proxies: %s" % (kwargs, self._current_proxies))
 
-        # kwargs.update({"proxies", self._current_proxies})
-        # kwargs.update({"timeout", 2})
-        logging.info("<GET %s %s>" % (url, kwargs))
+        logging.info("<GET %s>" % url)
         # try:
-        response = self._session.get(url, **kwargs)
+        response = self._session.get(url, proxies=self._current_proxies, allow_redirects=False)
         logging.info("<response %d>" % response.status_code)
         # if response.status_code not in (200, 302):
         #     self._refresh_proxy()

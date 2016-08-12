@@ -1,15 +1,16 @@
 # -*- coding:utf-8 -*-
 __author__ = 'zhaojm'
 
-import json
 import random
-import time
 import logging
 from urlparse import urljoin
 from captcha import read_body_to_string
 from http_client import HTTPClient
+import StringIO
+import gzip
+import json
 
-from exception import Error302, Error403
+from exception import Error302, Error403, Error404, ErrorStatusCode
 
 
 class QianzhanClient(object):
@@ -21,10 +22,10 @@ class QianzhanClient(object):
 
     """+++++++++++++++++++login++++++++++++"""
 
-    # def _per_login(self):
-    #     login_page_url = "http://qiye.qianzhan.com/usercenter/login?ReturnUrl=http%3A%2F%2Fqiye.qianzhan.com%2F"
-    #     response = self._http_client.get(login_page_url)
-    #     return self._get_varifyimage(True)
+    def _per_login(self):
+        login_page_url = "http://qiye.qianzhan.com/usercenter/login?ReturnUrl=http%3A%2F%2Fqiye.qianzhan.com%2F"
+        response = self._http_client.get(login_page_url)
+        return self._get_varifyimage(True)
 
     def _get_varifyimage(self, is_first=False):
         if is_first:
@@ -33,40 +34,47 @@ class QianzhanClient(object):
             varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage?" + str(random.random())
 
         response = self._http_client.get(varifyimage_url)
+        # logging.debug("verifyimage: %s" % response.content)
         varifycode = read_body_to_string(response.content)
         logging.debug("varifycode: %s" % varifycode.replace(' ', ''))
         return varifycode.replace(' ', '')
 
-    # def _do_login(self, varifycode, max_times=10):
-    #     form_data = {
-    #         "userId": self._userId,
-    #         "password": self._password,
-    #         "VerifyCode": varifycode,
-    #         "sevenDays": "false"
-    #     }
-    #     login_url = "http://qiye.qianzhan.com/usercenter/dologin"
-    #     response = self._http_client.post(login_url, form_data)
-    #     json_obj = response.json()
-    #
-    #     logging.debug("sMsg: %s" % json_obj.get("sMsg"))
-    #
-    #     if not json_obj.get("isSuccess"):
-    #         # print json_obj.get("sMsg")
-    #         max_times -= 1
-    #         if max_times > 0:
-    #             varifycode = self._get_varifyimage()
-    #             return self._do_login(varifycode, max_times)
-    #         else:
-    #             return False
-    #     # print json_obj.get("sMsg")
-    #     logging.info("cookie: %s" % response.cookies.get_dict())
-    #     return True
+    def _do_login(self, varifycode, max_times=10):
+        form_data = {
+            "userId": self._userId,
+            "password": self._password,
+            "VerifyCode": varifycode,
+            "sevenDays": "false"
+        }
+        login_url = "http://qiye.qianzhan.com/usercenter/dologin"
+        response = self._http_client.post(login_url, form_data)
+        logging.debug("text: %s" % response.text)
 
-    # def login(self):
-    #     # print "++++++++++++++login+++++++++++++++++"
-    #     varifycode = self._per_login()
-    #     is_success = self._do_login(varifycode)
-    #     return is_success
+        try:
+            json_obj = json.loads(response.text)
+        except Exception, e:
+            json_obj = {"isSuccess": False, "sMsg": "is html return"}
+            pass
+
+        logging.debug("json_obj: %s" % json_obj)
+
+        if not json_obj.get("isSuccess"):
+            # print json_obj.get("sMsg")
+            max_times -= 1
+            if max_times > 0:
+                varifycode = self._get_varifyimage()
+                return self._do_login(varifycode, max_times)
+            else:
+                return False
+        # print json_obj.get("sMsg")
+        logging.info("cookie: %s" % response.cookies.get_dict())
+        return True
+
+    def login(self):
+        # print "++++++++++++++login+++++++++++++++++"
+        varifycode = self._per_login()
+        is_success = self._do_login(varifycode)
+        return is_success
 
     '''++++++++++++++++++userverify+++++++++++++++++++'''
 
@@ -104,42 +112,62 @@ class QianzhanClient(object):
 
     """+++++++++++verify post get++++++++"""
 
-    def _verify_post(self, url, data=None, json=None, **kwargs):
-        kwargs.setdefault("allow_redirects", False)
-        response = self._http_client.post(url, data, json, **kwargs)
-        if response.status_code == 302:
+    def _verify_post(self, url, data=None, json=None):
+        # kwargs.setdefault("allow_redirects", False)
+        response = self._http_client.post(url, data, json)
+        if response.status_code == 200:
+            pass
+        elif response.status_code == 302:
             location = response.headers['Location']
             user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
             is_success = self.do_verify(user_verify_url)
             if is_success:
-                response = self._verify_post(url, data, json, **kwargs)
+                response = self._verify_post(url, data, json)
             else:
-                # is_success = self.login()
-                # if is_success:
-                #     response = self._http_client.post(url, data, json, **kwargs)
-                # else:
-                raise Error302()
+                is_success = self.login()
+                if is_success:
+                    response = self._http_client.post(url, data, json)
+                else:
+                    raise Error302()
         elif response.status_code == 403:
             raise Error403()
+        elif response.status_code == 404:
+            is_success = self.login()
+            if is_success:
+                response = self._http_client.post(url, data, json)
+            else:
+                raise Error404()
+        else:
+            raise ErrorStatusCode()
         return response
 
-    def _verify_get(self, url, **kwargs):
-        kwargs.setdefault("allow_redirects", False)
-        response = self._http_client.get(url, **kwargs)
-        if response.status_code == 302:
+    def _verify_get(self, url):
+        # kwargs.setdefault("allow_redirects", False)
+        response = self._http_client.get(url)
+        if response.status_code == 200:
+            pass
+        elif response.status_code == 302:
             location = response.headers['Location']
             user_verify_url = urljoin("http://qiye.qianzhan.com/", location)
             is_success = self.do_verify(user_verify_url)
             if is_success:
-                response = self._verify_get(url, **kwargs)
+                response = self._verify_get(url)
             else:
-                # is_success = self.login()
-                # if is_success:
-                #     response = self._http_client.get(url, **kwargs)
-                # else:
-                raise Error302()
+                is_success = self.login()
+                if is_success:
+                    response = self._http_client.get(url)
+                else:
+                    raise Error302()
         elif response.status_code == 403:
             raise Error403()
+        elif response.status_code == 404:
+            is_success = self.login()
+            if is_success:
+                response = self._http_client.get(url)
+            else:
+                raise Error404()
+        else:
+            raise ErrorStatusCode()
         return response
 
     """""+++++++++++++++hehe+++++++++++++++++++"""

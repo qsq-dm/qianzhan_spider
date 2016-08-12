@@ -6,46 +6,25 @@ import logging
 
 # MONGO
 MONGO_URI = "localhost:27017"
-# MONGO_NEEQ_DB = "neeq"
 
 mongo_client = pymongo.MongoClient(MONGO_URI)
 db = mongo_client["qianzhan"]
 
 
-# neeq_db = mongo_client[MONGO_NEEQ_DB]
-# ejinsui_db = mongo_client['ejinsui']
-gaoxin_db = mongo_client['gaoxin']
-proxy_db = mongo_client['proxy']
-
-
-class CompanyDB(object):
+class QianzhanDB(object):
     def __init__(self):
         pass
 
     @staticmethod
     def upsert_company(item):
         logging.info("<MONGO> %s" % item)
-        db.company_info_items.update({'company_name': item['company_name']}, {'$set': item}, True, True)
+        db.company_info_items_base.update({'company_name': item['company_name']}, {'$set': item}, True, True)
 
     @staticmethod
-    def upsert_company_gaoxin(item):
-        logging.info("<MONGO> %s" % item)
-        db.company_info_items_gaoxin.update({'company_name': item['company_name']}, {'$set': item}, True, True)
-
-
-class GaoxinDB(object):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def get_items():
-        return gaoxin_db.company_info.find().batch_size(50).skip(5467)
-
-
-class ProxyDB(object):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def get_items():
-        return proxy_db.proxy_items.find().batch_size(50)
+    def is_had(company_name):
+        cur = db.company_info_items_base.find_one({"company_name": company_name})
+        # logging.debug("cur:%s" % cur)
+        if cur:
+            return True
+        else:
+            return False

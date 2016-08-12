@@ -9,7 +9,7 @@ from urlparse import urljoin
 
 from utils import get_1000_txt
 
-from mongo import CompanyDB
+from mongo import QianzhanDB
 
 from qianzhan_client import QianzhanClient
 from exception import Error302, Error403
@@ -71,7 +71,7 @@ class Spider(object):
             'hdoc_area': soup.select_one('input[id="hdoc_area"]')['value']
         })
 
-        logging.debug("company:->%s" % company)
+        # logging.debug("company:->%s" % company)
         #
         # company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
         # company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
@@ -104,13 +104,15 @@ class Spider(object):
             company_url = urljoin("http://qiye.qianzhan.com/", href)
             if RedisClient.get_company_name_key(company_name):
                 continue
+            if QianzhanDB.is_had(company_name):
+                continue
             if RedisClient.get_company_url_key(url):
                 continue
             logging.info("company_name:->%s" % company_name)
             try:
                 company = self._get_company(company_url)
                 if company:
-                    CompanyDB.upsert_company(company)  # upsert company
+                    QianzhanDB.upsert_company(company)  # upsert company
                     RedisClient.set_company_name_key(company_name)
                     RedisClient.set_company_url_key(url)
             except Error302, err:
@@ -139,10 +141,10 @@ class Spider(object):
 
     def _run(self):
 
-        for i in range(63, len(self._txt)):
-            for j in range(len(self._txt)):
+        for i in range(136, len(self._txt)):
+            for j in range(i, len(self._txt)):
                 # if i % 2 == 0:
-                #     j = i + 1
+                # j = i + 5
                 search_key = self._txt[i] + self._txt[j]
                 # search_key = u'在线途游(北京)科技有限公司'
                 # search_key = u'北京'
@@ -155,7 +157,7 @@ class Spider(object):
                 #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
                 # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
                 #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
-                url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
+                url = "http://qiye.qianzhan.com/search/all/" + urllib.quote(
                     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
 
                 try:
@@ -174,12 +176,12 @@ class Spider(object):
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")
         try:
-            # is_success = self._qianzhan_client.login()
-            # if is_success:
-            self._run()
-            logging.info("++++++++++++++success finish!!!++++++++")
-            # else:
-            #     raise Error302()
+            is_success = self._qianzhan_client.login()
+            if is_success:
+                self._run()
+                logging.info("++++++++++++++success finish!!!++++++++")
+            else:
+                raise Error302()
         except Error302, err:
             logging.error(err.message)
         except Error403, err:
