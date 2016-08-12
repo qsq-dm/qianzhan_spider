@@ -176,12 +176,12 @@ class Spider(object):
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")
         try:
-            is_success = self._qianzhan_client.login()
-            if is_success:
-                self._run()
-                logging.info("++++++++++++++success finish!!!++++++++")
-            else:
-                raise Error302()
+            # is_success = self._qianzhan_client.login()
+            # if is_success:
+            self._run()
+            logging.info("++++++++++++++success finish!!!++++++++")
+            # else:
+            #     raise Error302()
         except Error302, err:
             logging.error(err.message)
         except Error403, err:
