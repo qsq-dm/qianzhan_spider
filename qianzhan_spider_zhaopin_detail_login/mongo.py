@@ -22,6 +22,11 @@ class QianzhanDB(object):
         qianzhan_db.company_info_items_base.update({'company_name': item['company_name']}, {'$set': item}, True, True)
 
     @staticmethod
+    def upsert_company_detail(item):
+        logging.info("<MONGO> %s" % item)
+        qianzhan_db.company_info_items_detail.update({'company_name': item['company_name']}, {'$set': item}, True, True)
+
+    @staticmethod
     def is_had(company_name):
         cur = qianzhan_db.company_info_items_base.find_one({"company_name": company_name})
         # logging.debug("cur:%s" % cur)

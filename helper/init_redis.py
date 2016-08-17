@@ -76,10 +76,10 @@ if __name__ == "__main__":
     sys.setdefaultencoding("utf-8")
     print "sys default encoding: ", sys.getdefaultencoding()
 
-    cur = QianzhanDB.get_companys_base()
-    for company in cur:
-        logging.info(company['company_name'])
-        RedisClient.set_company_name_base_key(company['company_name'])
+    # cur = QianzhanDB.get_companys_base()
+    # for company in cur:
+    #     logging.info(company['company_name'])
+    #     RedisClient.set_company_name_base_key(company['company_name'])
 
     cur = QianzhanDB.get_companys_detail()
     for company in cur:

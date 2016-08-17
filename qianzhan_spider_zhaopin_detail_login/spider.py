@@ -79,8 +79,8 @@ class Spider(object):
         return company
 
     def _get_search(self, url):
-        if RedisClient.get_search_url_key(url):
-            return
+        # if RedisClient.get_search_url_key(url):
+        #     return
 
         response = self._qianzhan_client.get_search(url)
 
@@ -93,17 +93,17 @@ class Spider(object):
             company_url = urljoin("http://qiye.qianzhan.com/", href)
             if RedisClient.get_company_name_detail_key(company_name):
                 continue
-            if QianzhanDB.is_detail_had(company_name):
-                continue
-            if RedisClient.get_company_url_detail_key(url):
-                continue
+            # if QianzhanDB.is_detail_had(company_name):
+            #     continue
+            # if RedisClient.get_company_url_detail_key(url):
+            #     continue
             logging.info("company_name:->%s" % company_name)
             try:
                 company = self._get_company(company_url)
                 if company:
-                    QianzhanDB.upsert_company(company)  # upsert company
+                    QianzhanDB.upsert_company_detail(company)  # upsert company
                     RedisClient.set_company_name_detail_key(company_name)
-                    RedisClient.set_company_url_detail_key(url)
+                    # RedisClient.set_company_url_detail_key(url)
             except Error302, err:
                 logging.exception("get_company Error302, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
