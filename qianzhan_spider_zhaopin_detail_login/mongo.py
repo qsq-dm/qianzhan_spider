@@ -66,4 +66,4 @@ class ZhaopinDB(object):
 
     @staticmethod
     def get_companys():
-        return zhaopin_db.company_info_items_base.find().batch_size(50)
+        return zhaopin_db.company_info_items.find().batch_size(50)
