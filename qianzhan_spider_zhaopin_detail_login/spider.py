@@ -111,8 +111,9 @@ class Spider(object):
                 logging.exception("get_company Error403, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
             except Exception, e:
-                logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
-                pass
+                # logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
+                # pass
+                raise e
             break
             # try:
             #     next_page_href = soup.select_one('body a[class="next"]')['href']
