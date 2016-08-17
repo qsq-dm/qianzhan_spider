@@ -17,6 +17,7 @@ class HTTPClient(object):
         self._last_request_time = -1
 
         self._current_proxies = {"http": proxies}
+        self._current_proxies = {}
         # self._refresh_proxy_cur()
         # self._refresh_proxy()
         pass

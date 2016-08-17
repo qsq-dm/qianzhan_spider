@@ -9,7 +9,7 @@ from urlparse import urljoin
 
 from mongo import QianzhanDB, ZhaopinDB
 from qianzhan_client import QianzhanClient
-from exceptions import Error302, Error403
+from exception import Error302, Error403
 from mredis import RedisClient
 
 

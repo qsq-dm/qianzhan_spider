@@ -8,7 +8,7 @@ from urlparse import urljoin
 
 from captcha import read_body_to_string
 from http_client import HTTPClient
-from exceptions import Error302, Error403, Error404, ErrorStatusCode
+from exception import Error302, Error403, Error404, ErrorStatusCode
 
 
 class QianzhanClient(object):
