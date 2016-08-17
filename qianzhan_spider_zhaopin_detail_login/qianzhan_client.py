@@ -1,15 +1,13 @@
 # -*- coding:utf-8 -*-
 __author__ = 'zhaojm'
 
+import json
 import random
 import logging
 from urlparse import urljoin
+
 from captcha import read_body_to_string
 from http_client import HTTPClient
-import StringIO
-import gzip
-import json
-
 from exceptions import Error302, Error403, Error404, ErrorStatusCode
 
 
@@ -86,10 +84,6 @@ class QianzhanClient(object):
         return self._get_varifyimage()
 
     def _do_verify(self, varifycode, max_times=10):
-        # form_data = {
-        #     "VerifyCode": varifycode.replace(' ', ''),
-        #     "sevenDays": "false"
-        # }
         check_varify_image_url = "http://qiye.qianzhan.com/usercenter/CheckVarifyImage?VerifyCode=" + varifycode
         response = self._http_client.post(check_varify_image_url)
         json_obj = response.json()

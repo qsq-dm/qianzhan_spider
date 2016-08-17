@@ -20,10 +20,4 @@ default_headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
 }
 
-# proxies = "http://120.131.128.211:80"
-# proxies = "http://106.75.128.90:80"
-# proxies = "http://106.75.128.89:80"
-# proxies = "http://120.52.73.199:80"
-# proxies = "http://121.193.143.249:80"
-# proxies = "http://124.133.230.254:80"
 proxies = "http://223.67.136.218:80"

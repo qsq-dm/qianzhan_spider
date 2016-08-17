@@ -7,13 +7,9 @@ import logging
 from bs4 import BeautifulSoup
 from urlparse import urljoin
 
-from utils import get_1000_txt
-
-from mongo import QianzhanDB
-
+from mongo import QianzhanDB, ZhaopinDB
 from qianzhan_client import QianzhanClient
 from exceptions import Error302, Error403
-
 from mredis import RedisClient
 
 
@@ -133,47 +129,36 @@ class Spider(object):
 
     def _run(self):
 
-        for i in range(520, len(self._txt)):
-            for j in range(i, len(self._txt)):
-                # if i % 2 == 0:
-                # j = i + 5
-                search_key = self._txt[i] + self._txt[j]
-                # search_key = u'在线途游(北京)科技有限公司'
-                # search_key = u'北京'
-                if RedisClient.get_search_key_key(search_key):
-                    continue
-                logging.info(
-                    "++++++crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
-                # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
-                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-                #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
-                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-                #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
-                url = "http://qiye.qianzhan.com/search/all/" + urllib.quote(
-                    search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
+        cur = ZhaopinDB.get_companys()
+        for item in cur:
+            search_key = item['company_name']
+            if RedisClient.get_search_key_key(search_key):
+                continue
+            logging.info(
+                "++++++crawl zhaopin:->search_key: %s" % search_key)
+            url = "http://qiye.qianzhan.com/search/all/" + urllib.quote(
+                search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
 
-                try:
-                    self._get_search(url)
-                    RedisClient.set_search_key_key(search_key)
-                except Error302, err:
-                    raise Error302(i, j)
-                except Error403, err:
-                    raise Error403(i, j)
-                except Exception, e:
-                    logging.exception(
-                        "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (
-                            i, j, len(self._txt), search_key, e.message))
-                    pass
+            try:
+                self._get_search(url)
+                RedisClient.set_search_key_key(search_key)
+            except Error302, err:
+                raise Error302()
+            except Error403, err:
+                raise Error403()
+            except Exception, e:
+                logging.exception("_get_search:->search_key: %s, %s" % (search_key, e.message))
+                pass
 
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")
         try:
-            # is_success = self._qianzhan_client.login()
-            # if is_success:
-            self._run()
-            logging.info("++++++++++++++success finish!!!++++++++")
-            # else:
-            #     raise Error302()
+            is_success = self._qianzhan_client.login()
+            if is_success:
+                self._run()
+                logging.info("++++++++++++++success finish!!!++++++++")
+            else:
+                raise Error302()
         except Error302, err:
             logging.error(err.message)
         except Error403, err:
