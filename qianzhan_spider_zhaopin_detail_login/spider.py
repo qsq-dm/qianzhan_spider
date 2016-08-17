@@ -91,19 +91,19 @@ class Spider(object):
             href = tag['href']
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
-            if RedisClient.get_company_name_key(company_name):
+            if RedisClient.get_company_name_detail_key(company_name):
                 continue
-            if QianzhanDB.is_had(company_name):
+            if QianzhanDB.is_detail_had(company_name):
                 continue
-            if RedisClient.get_company_url_key(url):
+            if RedisClient.get_company_url_detail_key(url):
                 continue
             logging.info("company_name:->%s" % company_name)
             try:
                 company = self._get_company(company_url)
                 if company:
                     QianzhanDB.upsert_company(company)  # upsert company
-                    RedisClient.set_company_name_key(company_name)
-                    RedisClient.set_company_url_key(url)
+                    RedisClient.set_company_name_detail_key(company_name)
+                    RedisClient.set_company_url_detail_key(url)
             except Error302, err:
                 logging.exception("get_company Error302, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
@@ -132,7 +132,7 @@ class Spider(object):
         cur = ZhaopinDB.get_companys()
         for item in cur:
             search_key = item['company_name']
-            if RedisClient.get_search_key_key(search_key):
+            if RedisClient.get_search_key_detail_key(search_key):
                 continue
             logging.info(
                 "++++++crawl zhaopin:->search_key: %s" % search_key)
@@ -141,7 +141,7 @@ class Spider(object):
 
             try:
                 self._get_search(url)
-                RedisClient.set_search_key_key(search_key)
+                RedisClient.set_search_key_detail_key(search_key)
             except Error302, err:
                 raise Error302()
             except Error403, err:

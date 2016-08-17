@@ -30,6 +30,15 @@ class QianzhanDB(object):
         else:
             return False
 
+    @staticmethod
+    def is_detail_had(company_name):
+        cur = qianzhan_db.company_info_items_detail.find_one({"company_name": company_name})
+        # logging.debug("cur:%s" % cur)
+        if cur:
+            return True
+        else:
+            return False
+
 
 class ZhaopinDB(object):
     def __init__(self):
