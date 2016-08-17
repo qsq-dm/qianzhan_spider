@@ -2,7 +2,7 @@
 __author__ = 'zhaojm'
 
 from spider import Spider
-from config import userId, password
+from config import userId, password, log_file1, log_file2
 from log import init_logging
 import logging
 import time
@@ -15,7 +15,7 @@ print "sys default encoding: ", sys.getdefaultencoding()
 
 
 def main():
-    init_logging("log/log.log", "log/myspider.log")
+    init_logging(log_file1, log_file2)
     spider = Spider(userId, password)
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     spider.run()

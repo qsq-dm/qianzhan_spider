@@ -6,6 +6,9 @@ password = "123456"
 
 download_delay = 0.0
 
+log_file1 = "log/log_zhaopin_detail.log"
+log_file2 = "log/zhaopin_detail.log"
+
 default_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate, sdch',
