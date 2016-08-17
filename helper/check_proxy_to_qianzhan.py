@@ -53,6 +53,27 @@ if __name__ == "__main__":
                 proxies=proxies, timeout=1, allow_redirects=False)
             logging.info("<response %d>" % response.status_code)
             if response.status_code == 200 and response.text.find(u"企业查询宝") > 0:
+                proxy_db.proxy_items_qianzhan.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+            else:
+                # proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+                pass
+        except Exception, e:
+            logging.exception(e)
+            # proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+            # proxy_db.proxy_items_qianzhan_5.remove({"ip": item['ip'], "port": item['port']})
+            # proxy_db.proxy_items_all.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+
+    cur = proxy_db.proxy_items_qianzhan.find({}, {'_id': 0}).batch_size(50)
+    for item in cur:
+        time.sleep(0.4)
+        logging.info("%s:%s" % (item['ip'], item['port']))
+        proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
+        try:
+            response = session.get(
+                "http://qiye.qianzhan.com/search/all/%E5%8C%97%E4%BA%AC?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1",
+                proxies=proxies, timeout=1, allow_redirects=False)
+            logging.info("<response %d>" % response.status_code)
+            if response.status_code == 200 and response.text.find(u"企业查询宝") > 0:
                 proxy_db.proxy_items_qianzhan_2.update({"ip": item['ip'], "port": item['port']}, item, True, True)
             else:
                 # proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
