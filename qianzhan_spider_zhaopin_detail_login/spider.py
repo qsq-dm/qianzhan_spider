@@ -9,10 +9,10 @@ from urlparse import urljoin
 
 from utils import get_1000_txt
 
-from mongo import QianzhanDB, GaoxinDB
+from mongo import QianzhanDB
 
 from qianzhan_client import QianzhanClient
-from exception import Error302
+from exceptions import Error302, Error403
 
 from mredis import RedisClient
 
@@ -83,6 +83,8 @@ class Spider(object):
         return company
 
     def _get_search(self, url):
+        if RedisClient.get_search_url_key(url):
+            return
 
         response = self._qianzhan_client.get_search(url)
 
@@ -93,18 +95,24 @@ class Spider(object):
             href = tag['href']
             company_name = tag.text
             company_url = urljoin("http://qiye.qianzhan.com/", href)
-            logging.info("company_name:->%s" % company_name)
-            if RedisClient.get_company_name_detail_key(company_name):
+            if RedisClient.get_company_name_key(company_name):
                 continue
             if QianzhanDB.is_had(company_name):
                 continue
+            if RedisClient.get_company_url_key(url):
+                continue
+            logging.info("company_name:->%s" % company_name)
             try:
                 company = self._get_company(company_url)
                 if company:
                     QianzhanDB.upsert_company(company)  # upsert company
-                    RedisClient.set_company_name_base_key(company['company_name'])
+                    RedisClient.set_company_name_key(company_name)
+                    RedisClient.set_company_url_key(url)
             except Error302, err:
                 logging.exception("get_company Error302, company_name:->%s, e:->%s" % (company_name, err))
+                raise err
+            except Error403, err:
+                logging.exception("get_company Error403, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
             except Exception, e:
                 logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
@@ -124,56 +132,51 @@ class Spider(object):
             #     self._get_search(next_page_url)
 
     def _run(self):
-        # for i in range(len(self._txt)):
-        #     for j in range(len(self._txt)):
-        cur = GaoxinDB.get_items()
-        for item in cur:
-            # search_key = self._txt[i] + self._txt[j]
-            # search_key = u'在线途游(北京)科技有限公司'
-            # search_key = u'北京'
-            search_key = item['company_name']
-            search_key_2 = search_key.replace("（", "(").replace("）", ")")
-            if RedisClient.get_company_name_detail_key(search_key_2):
-                continue
-            if QianzhanDB.is_had(search_key_2):
-                logging.debug("has")
-                continue
 
-            if RedisClient.get_company_name_detail_key(search_key):
-                continue
-            if QianzhanDB.is_had(search_key):
-                logging.debug("has")
-                continue
+        for i in range(520, len(self._txt)):
+            for j in range(i, len(self._txt)):
+                # if i % 2 == 0:
+                # j = i + 5
+                search_key = self._txt[i] + self._txt[j]
+                # search_key = u'在线途游(北京)科技有限公司'
+                # search_key = u'北京'
+                if RedisClient.get_search_key_key(search_key):
+                    continue
+                logging.info(
+                    "++++++crawl 1000:->i: %d, j: %d, len: %d, search_key: %s" % (i, j, len(self._txt), search_key))
+                # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
+                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+                #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
+                # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
+                #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
+                url = "http://qiye.qianzhan.com/search/all/" + urllib.quote(
+                    search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
 
-            logging.info("++++++crawl gaoxin:->search_key: %s" % search_key)
-            # url = "http://www.qichacha.com/search?key=" + urllib.quote(search_key.encode('utf-8')) + "&index=0"
-            # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-            #     search_key.encode('utf-8')) + "?o=0&area=0&areaN=%E5%85%A8%E5%9B%BD&p=1"
-            # url = "http://qiye.qianzhan.com/orgcompany/searchlistview/qy/" + urllib.quote(
-            #     search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC&p=" + str(page)
-            url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
-                search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
-
-            try:
-                self._get_search(url)
-                RedisClient.set_company_name_detail_key(search_key)
-            except Error302, err:
-                raise Error302()
-            except Exception, e:
-                logging.exception(
-                    "_get_search:->search_key: %s, %s" % (search_key, e.message))
-                pass
+                try:
+                    self._get_search(url)
+                    RedisClient.set_search_key_key(search_key)
+                except Error302, err:
+                    raise Error302(i, j)
+                except Error403, err:
+                    raise Error403(i, j)
+                except Exception, e:
+                    logging.exception(
+                        "_get_search:->i: %d, j: %d, len: %d, search_key: %s, %s" % (
+                            i, j, len(self._txt), search_key, e.message))
+                    pass
 
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")
         try:
-            is_success = self._qianzhan_client.login()
-            if is_success:
-                self._run()
-                logging.info("++++++++++++++success finish!!!++++++++")
-            else:
-                raise Error302()
+            # is_success = self._qianzhan_client.login()
+            # if is_success:
+            self._run()
+            logging.info("++++++++++++++success finish!!!++++++++")
+            # else:
+            #     raise Error302()
         except Error302, err:
+            logging.error(err.message)
+        except Error403, err:
             logging.error(err.message)
         except Exception, e:
             logging.exception(e.message)

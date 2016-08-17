@@ -42,20 +42,37 @@ class RedisClient(object):
         pass
 
     @staticmethod
-    def set_company_name_base_key(company_name):
-        redis_client.hset("company_name_base", company_name, True)
+    def set_company_name_key(company_name):
+        redis_client.hset("company_name", company_name, True)
 
     @staticmethod
-    def get_company_name_base_key(company_name):
-        return redis_client.hexists("company_name_base", company_name)
+    def get_company_name_key(company_name):
+        return redis_client.hexists("company_name", company_name)
 
     @staticmethod
-    def set_company_url_base_key(url):
-        redis_client.hset("company_url_base", url, True)
+    def set_company_url_key(url):
+        redis_client.hset("company_url", url, True)
 
     @staticmethod
-    def get_company_url_base_key(url):
-        return redis_client.hget("company_url_base", url)
+    def get_company_url_key(url):
+        return redis_client.hexists("company_url", url)
+
+    @staticmethod
+    def set_search_url_key(url):
+        redis_client.hset("search_url", url, True)
+
+    @staticmethod
+    def get_search_url_key(url):
+        return redis_client.hexists("search_url", url)
+
+    @staticmethod
+    def set_search_key_key(key):
+        redis_client.hset("search_key", key, True)
+
+    @staticmethod
+    def get_search_key_key(key):
+        return redis_client.hexists("search_key", key)
+
 
     @staticmethod
     def set_company_name_detail_key(company_name):
@@ -73,17 +90,7 @@ class RedisClient(object):
     def get_company_url_detail_key(url):
         return redis_client.hget("company_url_detail", url)
 
-
-
-
-
-
-
-
-
-
-
-
+#
 #     @staticmethod
 #     def clear_redis():
 #         """
@@ -212,5 +219,3 @@ class RedisClient(object):
 #             return True
 #         else:
 #             return False
-
-
