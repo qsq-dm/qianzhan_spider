@@ -62,17 +62,17 @@ class Spider(object):
 
         # logging.debug("company:->%s" % company)
 
-        company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
-        company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
-                                                                                    company['hdoc_area'])})
-        company.update({'searchitemdftz': self._qianzhan_client.post_searchitemdftz(company['company_name'])})
+        # company.update({'getcommentlist': self._qianzhan_client.post_getcommentlist(company['hdencryptCode'])})
+        # company.update({'SearchItemCCXX': self._qianzhan_client.post_SearchItemCCXX(company['hdencryptCode'],
+        #                                                                             company['hdoc_area'])})
+        # company.update({'searchitemdftz': self._qianzhan_client.post_searchitemdftz(company['company_name'])})
         company.update({'searchitemnbinfo': self._qianzhan_client.post_searchitemnbinfo(company['hdencryptCode'],
                                                                                         company['hdoc_area'])})
         if company['searchitemnbinfo'] and len(company['searchitemnbinfo']) > 0:
             company.update(
                 {'searchitemnb': self._qianzhan_client.post_searchitemnb(company['hdencryptCode'], company['hdoc_area'],
                                                                          company['searchitemnbinfo'][0].get('year'))})
-        company.update({'searchitemsite': self._qianzhan_client.post_searchitemsite(company['hdencryptCode'])})
+        # company.update({'searchitemsite': self._qianzhan_client.post_searchitemsite(company['hdencryptCode'])})
 
         # print "company:->", company
 
