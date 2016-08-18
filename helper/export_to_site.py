@@ -20,8 +20,7 @@ class QianzhanDB(object):
 
     @staticmethod
     def company_details():
-        return qianzhan_db.company_info_items_detail.find({"searchitemnb.nbInfo.phone": {"$exists": True}}).batch_size(
-            50)
+        return qianzhan_db.company_info_items_detail.find().batch_size(50)
 
     @staticmethod
     def upsert_company_export(item):
