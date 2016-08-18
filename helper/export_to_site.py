@@ -63,7 +63,7 @@ if __name__ == "__main__":
         except:
             pass
         try:
-            result.update({"email": item['searchitemnb']['nbInfo']['phone']})
+            result.update({"phone": item['searchitemnb']['nbInfo']['phone']})
         except:
             pass
         try:
