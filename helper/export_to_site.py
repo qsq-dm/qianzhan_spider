@@ -47,8 +47,8 @@ if __name__ == "__main__":
             "registered_capital": item['registered_capital'],
             "registration_number": item['registration_number'],
 
-            "email": item['searchitemnb.nbInfo.mail'],
-            "phone": item['searchitemnb.nbInfo.phone'],
+            # "email": item['searchitemnb.nbInfo.mail'],
+            # "phone": item['searchitemnb.nbInfo.phone'],
 
             "item_from": "qianzhan",
 
@@ -59,6 +59,14 @@ if __name__ == "__main__":
             # "x_register_date": time.strftime("%Y%m%d", time.strptime(item['register_date'], "%Y-%m-%d")),
             "sort": 1
         }
+        try:
+            result.update({"email": item['searchitemnb']['nbInfo']['mail']})
+        except:
+            pass
+        try:
+            result.update({"email": item['searchitemnb']['nbInfo']['phone']})
+        except:
+            pass
         try:
             result.update({
                 "x_register_date": time.strftime("%Y%m%d", time.strptime(item['register_date'], "%Y-%m-%d"))
