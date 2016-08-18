@@ -73,3 +73,5 @@ if __name__ == "__main__":
             })
         except Exception, e:
             pass
+
+        QianzhanDB.upsert_company_export(result)
