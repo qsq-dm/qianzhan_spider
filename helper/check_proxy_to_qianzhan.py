@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     cur = proxy_db.proxy_items_all.find({}, {'_id': 0}).batch_size(50)
     for item in cur:
-        time.sleep(0.5)
+        time.sleep(1)
         logging.info("%s:%s" % (item['ip'], item['port']))
         proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
         try:
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     cur = proxy_db.proxy_items_qianzhan.find({}, {'_id': 0}).batch_size(50)
     for item in cur:
-        time.sleep(0.5)
+        time.sleep(1)
         logging.info("%s:%s" % (item['ip'], item['port']))
         proxies = {"http": "http://%s:%s" % (item['ip'], item['port'])}
         try:
