@@ -50,7 +50,7 @@ if __name__ == "__main__":
         try:
             response = session.get(
                 "http://qiye.qianzhan.com",
-                proxies=proxies, timeout=2, allow_redirects=False)
+                proxies=proxies, timeout=3, allow_redirects=False)
             logging.info("<response %d>" % response.status_code)
             if response.status_code == 200 and response.text.find(u"企业查询宝") > 0:
                 proxy_db.proxy_items_qianzhan.update({"ip": item['ip'], "port": item['port']}, item, True, True)
@@ -83,3 +83,5 @@ if __name__ == "__main__":
             # proxy_db.proxy_items_other.update({"ip": item['ip'], "port": item['port']}, item, True, True)
             # proxy_db.proxy_items_qianzhan_5.remove({"ip": item['ip'], "port": item['port']})
             # proxy_db.proxy_items_all.update({"ip": item['ip'], "port": item['port']}, item, True, True)
+
+    logging.info("success finish!!-------")
