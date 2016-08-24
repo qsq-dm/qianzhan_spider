@@ -84,6 +84,7 @@ class Spider(object):
 
         response = self._qianzhan_client.get_search(url)
 
+
         soup = BeautifulSoup(response.text, 'lxml')
 
         link_li_list = soup.select("body ul[class='list-search'] li p[class='tit'] a")
@@ -155,6 +156,14 @@ class Spider(object):
                 raise Error302()
             except Error403, err:
                 raise Error403()
+            except Error400, err:
+                logging.exception("_get_search Error400, search_key:->%s, e:->%s" % (search_key, err))
+                RedisClient.set_search_key_detail_key(search_key)
+                # raise err
+            except Error404, err:
+                logging.exception("_get_search Error404, search_key:->%s, e:->%s" % (search_key, err))
+                RedisClient.set_search_key_detail_key(search_key)
+                # raise err
             except Exception, e:
                 logging.exception("_get_search:->search_key: %s, %s" % (search_key, e.message))
                 pass
