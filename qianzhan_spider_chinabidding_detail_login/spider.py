@@ -139,10 +139,12 @@ class Spider(object):
     def _run(self):
 
         cur = ChinabiddingDB.get_company_names()
+        i = 0
         for item in cur:
+            i += 1
             search_key = item['company_name']
             search_key = search_key.strip()
-
+            logging.info("i========================: %s" % i)
             if RedisClient.get_search_key_detail_key(search_key):
                 continue
             logging.info(
