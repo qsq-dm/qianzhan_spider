@@ -4,7 +4,7 @@ __author__ = 'zhaojm'
 userId = "18519769065"
 password = "123456"
 
-download_delay = 0.0
+download_delay = 0.5
 
 log_file1 = "log/log_chinabidding_detail.log"
 log_file2 = "log/chinabidding_detail.log"
