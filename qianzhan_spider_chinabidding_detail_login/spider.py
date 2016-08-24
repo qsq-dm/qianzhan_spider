@@ -121,7 +121,7 @@ class Spider(object):
                 # logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
                 # pass
                 raise e
-            break
+                # break
             # try:
             #     next_page_href = soup.select_one('body a[class="next"]')['href']
             # except Exception, e:
@@ -137,27 +137,27 @@ class Spider(object):
 
     def _run(self):
 
-        cur = ChinabiddingDB.get_companys()
+        cur = ChinabiddingDB.get_company_names()
         for item in cur:
-            company_name_list = item['company_name_list']
-            for search_key in company_name_list:
-                if RedisClient.get_search_key_detail_key(search_key):
-                    continue
-                logging.info(
-                    "++++++crawl zhaopin:->search_key: %s" % search_key)
-                url = "http://qiye.qianzhan.com/search/all/" + urllib.quote(
-                    search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
+            search_key = item['company_name']
 
-                try:
-                    self._get_search(url)
-                    RedisClient.set_search_key_detail_key(search_key)
-                except Error302, err:
-                    raise Error302()
-                except Error403, err:
-                    raise Error403()
-                except Exception, e:
-                    logging.exception("_get_search:->search_key: %s, %s" % (search_key, e.message))
-                    pass
+            if RedisClient.get_search_key_detail_key(search_key):
+                continue
+            logging.info(
+                "++++++crawl zhaopin:->search_key: %s" % search_key)
+            url = "http://qiye.qianzhan.com/search/all/" + urllib.quote(
+                search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
+
+            try:
+                self._get_search(url)
+                RedisClient.set_search_key_detail_key(search_key)
+            except Error302, err:
+                raise Error302()
+            except Error403, err:
+                raise Error403()
+            except Exception, e:
+                logging.exception("_get_search:->search_key: %s, %s" % (search_key, e.message))
+                pass
 
     def run(self):
         logging.info("+++++++++++++run++++++++++++++++")

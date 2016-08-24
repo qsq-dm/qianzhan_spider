@@ -74,3 +74,7 @@ class ChinabiddingDB(object):
     @staticmethod
     def get_companys():
         return chinabidding_db.results.find().batch_size(50)
+
+    @staticmethod
+    def get_company_names():
+        return chinabidding_db.company_name.find().batch_size(50)
