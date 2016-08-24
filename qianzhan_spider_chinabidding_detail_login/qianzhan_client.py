@@ -8,7 +8,7 @@ from urlparse import urljoin
 
 from captcha import read_body_to_string
 from http_client import HTTPClient
-from exception import Error302, Error403, Error404, ErrorStatusCode
+from exception import Error302, Error403, Error404, ErrorStatusCode, Error400
 
 
 class QianzhanClient(object):
@@ -131,6 +131,8 @@ class QianzhanClient(object):
                 response = self._http_client.post(url, data, json)
             else:
                 raise Error404()
+        elif response.status_code == 400:
+            raise Error400
         else:
             raise ErrorStatusCode()
         return response
@@ -160,6 +162,8 @@ class QianzhanClient(object):
                 response = self._http_client.get(url)
             else:
                 raise Error404()
+        elif response.status_code == 400:
+            raise Error400
         else:
             raise ErrorStatusCode()
         return response

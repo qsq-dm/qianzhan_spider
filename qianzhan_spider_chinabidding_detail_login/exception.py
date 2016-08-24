@@ -20,6 +20,12 @@ class Error404(Exception):
         pass
 
 
+class Error400(Exception):
+    def __init__(self, i=0, j=0):
+        self.message = "error 400, i: %d, j:%d" % (i, j)
+        pass
+
+
 class ErrorStatusCode(Exception):
     def __init__(self, i=0, j=0):
         self.message = "error status code, i: %d, j:%d" % (i, j)

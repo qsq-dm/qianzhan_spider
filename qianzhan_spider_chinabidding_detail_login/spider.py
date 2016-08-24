@@ -9,7 +9,7 @@ from urlparse import urljoin
 
 from mongo import QianzhanDB, ChinabiddingDB
 from qianzhan_client import QianzhanClient
-from exception import Error302, Error403
+from exception import Error302, Error403, Error400, Error404
 from mredis import RedisClient
 
 
@@ -111,10 +111,16 @@ class Spider(object):
             except Error403, err:
                 logging.exception("get_company Error403, company_name:->%s, e:->%s" % (company_name, err))
                 raise err
+            except Error400, err:
+                logging.exception("get_company Error400, company_name:->%s, e:->%s" % (company_name, err))
+                # raise err
+            except Error404, err:
+                logging.exception("get_company Error404, company_name:->%s, e:->%s" % (company_name, err))
+                # raise err
             except Exception, e:
-                logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
+                # logging.exception("get_company exception, company_name:->%s, e:->%s" % (company_name, e))
                 # pass
-                # raise e
+                raise e
             break
             # try:
             #     next_page_href = soup.select_one('body a[class="next"]')['href']
