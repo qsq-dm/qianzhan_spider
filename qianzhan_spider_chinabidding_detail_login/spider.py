@@ -141,6 +141,7 @@ class Spider(object):
         cur = ChinabiddingDB.get_company_names()
         for item in cur:
             search_key = item['company_name']
+            search_key = search_key.strip()
 
             if RedisClient.get_search_key_detail_key(search_key):
                 continue
