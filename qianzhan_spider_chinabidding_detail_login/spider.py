@@ -145,7 +145,7 @@ class Spider(object):
                 continue
             logging.info(
                 "++++++crawl zhaopin:->search_key: %s" % search_key)
-            url = "http://qiye.qianzhan.com/search/all/" + urllib.quote(
+            url = "http://qiye.qianzhan.com/search/qy/" + urllib.quote(
                 search_key.encode('utf-8')) + "?o=0&area=11&areaN=%E5%8C%97%E4%BA%AC"
 
             try:
