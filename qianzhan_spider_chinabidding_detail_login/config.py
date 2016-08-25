@@ -54,4 +54,5 @@ default_headers = {
 # proxies = "http://112.239.225.102:808"
 # proxies = "http://115.159.111.58:8888"
 # proxies = "http://183.61.71.112:8888"
-proxies = "http://124.231.38.98:808"
+# proxies = "http://124.231.38.98:808"
+proxies = "http://182.90.6.90:80"
