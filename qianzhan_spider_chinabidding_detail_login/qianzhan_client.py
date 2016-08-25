@@ -29,7 +29,7 @@ class QianzhanClient(object):
         if is_first:
             varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage"
         else:
-            varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage?" + str(random.random())
+            varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage?t=" + str(random.randint(1000, 9999))
 
         response = self._http_client.get(varifyimage_url)
         # logging.debug("verifyimage: %s" % response.content)
