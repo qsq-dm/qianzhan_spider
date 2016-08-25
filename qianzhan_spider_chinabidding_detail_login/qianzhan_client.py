@@ -5,6 +5,7 @@ import json
 import random
 import logging
 from urlparse import urljoin
+from bs4 import BeautifulSoup
 
 from captcha import read_body_to_string
 from http_client import HTTPClient
@@ -29,7 +30,7 @@ class QianzhanClient(object):
         if is_first:
             varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage"
         else:
-            varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage?t=" + str(random.randint(1000, 9999))
+            varifyimage_url = "http://qiye.qianzhan.com/usercenter/varifyimage?t=" + str(random.random())
 
         response = self._http_client.get(varifyimage_url)
         # logging.debug("verifyimage: %s" % response.content)
@@ -79,6 +80,9 @@ class QianzhanClient(object):
     def _pre_varify(self, url):
         try:
             response = self._http_client.get(url)
+            # soup = BeautifulSoup(response.text, 'lxml')
+            # varifyimage_url = soup.select_one('img[class="code-img"]')['src']
+            # varifyimage_url = urljoin("http://qiye.qianzhan.com/", varifyimage_url)
         except Exception, e:
             pass
         return self._get_varifyimage()
