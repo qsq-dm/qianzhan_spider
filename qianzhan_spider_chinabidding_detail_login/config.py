@@ -23,8 +23,8 @@ default_headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
 }
 
-proxies = "http://222.161.209.168:8102"
-# proxies = "http://222.45.233.2:3128"
+# proxies = "http://222.161.209.168:8102"
+proxies = "http://222.45.233.2:3128"
 # proxies = "http://223.19.212.30:80"
 # proxies = "http://66.11.127.105:80"
 # proxies = "http://61.168.11.25:8080"
