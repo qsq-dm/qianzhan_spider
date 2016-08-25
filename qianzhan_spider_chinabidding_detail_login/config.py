@@ -4,7 +4,7 @@ __author__ = 'zhaojm'
 userId = "18519769065"
 password = "123456"
 
-download_delay = 0.5
+download_delay = 1.0
 
 log_file1 = "log/log_chinabidding_detail.log"
 log_file2 = "log/chinabidding_detail.log"
@@ -53,4 +53,5 @@ default_headers = {
 # proxies = "http://120.27.142.209:82"
 # proxies = "http://112.239.225.102:808"
 # proxies = "http://115.159.111.58:8888"
-proxies = "http://183.61.71.112:8888"
+# proxies = "http://183.61.71.112:8888"
+proxies = "http://124.231.38.98:808"
