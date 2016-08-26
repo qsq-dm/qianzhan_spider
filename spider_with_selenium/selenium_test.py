@@ -42,12 +42,19 @@ while True:
 
     # location = code_img.location
     # size = code_img.size
-    x = code_img.location['x']
-    y = code_img.location['y']
-    height = code_img.size['height']
-    width = code_img.size['width']
-    box = (x, y, x + width, y + height)
-    region = im.crop(box)
+    # x = code_img.location['x']
+    # y = code_img.location['y']
+    # height = code_img.size['height']
+    # width = code_img.size['width']
+    # box = (x, y, x + width, y + height)
+    # region = im.crop(box)
+
+    region = im.crop((code_img.location['x'],
+                      code_img.location['y'],
+                      code_img.location['x'] + code_img.size['width'],
+                      code_img.location['y'] + code_img.size['height']))
+
+    region = region.resize((64, 28), Image.ANTIALIAS)
     region.save('2.png')
 
     code = read_img_file_to_string('2.png')
