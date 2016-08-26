@@ -4,11 +4,11 @@ __author__ = 'zhaojm'
 import time
 import urllib
 import logging
+
 from bs4 import BeautifulSoup
 from urlparse import urljoin
 
 from mongo import QianzhanDB, ChinabiddingDB
-from site_client import SiteClient
 from exception import Error302, Error403, Error400, Error404
 from mredis import RedisClient
 from captcha import read_img_file_to_string
@@ -59,7 +59,8 @@ class Spider(object):
             # 找到a标签,点击a标签,
             # 跳转到浏览器新窗口, 拿到详细信息
             detail = self.detail()
-            # 关闭新窗口, 跳转回列表窗口,点击下一个
+            # 保存数据
+            # 关闭新窗口, 跳转回列表窗口
             # 循环
             pass
         # 拿到下一页标签,点击下一页标签
