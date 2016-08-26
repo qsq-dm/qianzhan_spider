@@ -23,7 +23,7 @@ class Spider(object):
         self._webdriver = new_webdriver()
         pass
 
-    def do_login(self):
+    def login(self):
         login_page_url = "http://qiye.qianzhan.com/usercenter/login?ReturnUrl=http%3A%2F%2Fqiye.qianzhan.com%2F"
         self._webdriver.get(login_page_url)
         user_id_input = self._webdriver.find_element_by_id('userId')
@@ -63,18 +63,17 @@ class Spider(object):
             # 循环
             pass
         # 拿到下一页标签,点击下一页标签
+        a_next = self._webdriver.find_element_by_class_name('next')
+        a_next.click()
         self.next_page()
 
     def detail(self):
 
         pass
 
-
     def run(self):
-        self.do_login()
-
+        self.login()
         for i in range(100):
             search_key = ''
             self.search(search_key)
-
         pass
