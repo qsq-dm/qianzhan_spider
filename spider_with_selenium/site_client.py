@@ -41,4 +41,13 @@ class SiteClient(object):
         pass
 
     def search(self, search_key):
+        searchname_input = self._webdriver.find_element_by_id('searchname')
+        searchname_input.send_keys(search_key)
+        search_button = self._webdriver.find_element_by_class_name('sec-btn')
+        search_button.click()
+        pass
+
+    def next_page(self):
+        a_next = self._webdriver.find_element_by_class_name('next')
+        a_next.click()
         pass
