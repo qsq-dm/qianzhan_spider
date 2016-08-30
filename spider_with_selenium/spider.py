@@ -57,11 +57,16 @@ class Spider(object):
         for li in li_list:
             # 拿到列表里一项的信息
             # 找到a标签,点击a标签,
-            # 跳转到浏览器新窗口, 拿到详细信息
+            # 跳转到浏览器新窗口, 切换窗口,拿到详细信息
             detail = self.detail()
             # 保存数据
             # 关闭新窗口, 跳转回列表窗口
             # 循环
+
+
+
+
+
             pass
         # 拿到下一页标签,点击下一页标签
         a_next = self._webdriver.find_element_by_class_name('next')
